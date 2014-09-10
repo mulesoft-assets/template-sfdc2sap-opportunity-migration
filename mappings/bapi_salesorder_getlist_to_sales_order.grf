@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?><Graph __version="3.5.0" author="martin" created="Fri Jul 18 09:52:07 CEST 2014" description="BAPI_SALESORDER_GETLIST to Sales Order" guiVersion="3.4.3.P" id="1405931722842" licenseCode="Unlicensed" licenseType="Unknown" modified="Fri Jul 18 09:52:07 CEST 2014" modifiedBy="martin" name="BAPI_SALESORDER_GETLIST_to_Sales_Order" revision="1.0" showComponentDetails="false">
+<Global>
+<Metadata __index="0" __referenceCounter="0" __sourcePath="{}/BAPI_SALESORDER_GETLIST" _dataStructure="OBJECT" _id="__id" _type="Input" id="6d8a6bc8-3b67-491d-bc53-8c8814bec686">
+<Record fieldDelimiter="," name="BAPI_SALESORDER_GETLIST" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
+<Field __artificialType="_id" __systemManaged="true" name="__id" type="string"/>
+<Field __index="0" __sourcePath="{}/BAPI_SALESORDER_GETLIST/import/CUSTOMER_NUMBER" containerType="SINGLE" label="CUSTOMER_NUMBER" name="CUSTOMER_NUMBER" type="string"/>
+<Field __index="1" __sourcePath="{}/BAPI_SALESORDER_GETLIST/import/DOCUMENT_DATE" containerType="SINGLE" label="DOCUMENT_DATE" name="DOCUMENT_DATE" type="string"/>
+<Field __index="2" __sourcePath="{}/BAPI_SALESORDER_GETLIST/import/DOCUMENT_DATE_TO" containerType="SINGLE" label="DOCUMENT_DATE_TO" name="DOCUMENT_DATE_TO" type="string"/>
+<Field __index="3" __sourcePath="{}/BAPI_SALESORDER_GETLIST/import/MATERIAL" containerType="SINGLE" label="MATERIAL" name="MATERIAL" type="string"/>
+<Field __index="4" __sourcePath="{}/BAPI_SALESORDER_GETLIST/import/MATERIAL_EVG/MATERIAL_EXT" containerType="SINGLE" label="MATERIAL_EXT" name="MATERIAL_EXT" type="string"/>
+<Field __index="5" __sourcePath="{}/BAPI_SALESORDER_GETLIST/import/MATERIAL_EVG/MATERIAL_VERS" containerType="SINGLE" label="MATERIAL_VERS" name="MATERIAL_VERS" type="string"/>
+<Field __index="6" __sourcePath="{}/BAPI_SALESORDER_GETLIST/import/MATERIAL_EVG/MATERIAL_GUID" containerType="SINGLE" label="MATERIAL_GUID" name="MATERIAL_GUID" type="string"/>
+<Field __index="7" __sourcePath="{}/BAPI_SALESORDER_GETLIST/import/PURCHASE_ORDER" containerType="SINGLE" label="PURCHASE_ORDER" name="PURCHASE_ORDER" type="string"/>
+<Field __index="8" __sourcePath="{}/BAPI_SALESORDER_GETLIST/import/PURCHASE_ORDER_NUMBER" containerType="SINGLE" label="PURCHASE_ORDER_NUMBER" name="PURCHASE_ORDER_NUMBER" type="string"/>
+<Field __index="9" __sourcePath="{}/BAPI_SALESORDER_GETLIST/import/SALES_ORGANIZATION" containerType="SINGLE" label="SALES_ORGANIZATION" name="SALES_ORGANIZATION" type="string"/>
+<Field __index="10" __sourcePath="{}/BAPI_SALESORDER_GETLIST/import/TRANSACTION_GROUP" containerType="SINGLE" label="TRANSACTION_GROUP" name="TRANSACTION_GROUP" type="string"/>
+<Field __index="11" __sourcePath="{}/BAPI_SALESORDER_GETLIST/export/RETURN/TYPE" containerType="SINGLE" label="TYPE" name="TYPE" type="string"/>
+<Field __index="12" __sourcePath="{}/BAPI_SALESORDER_GETLIST/export/RETURN/CODE" containerType="SINGLE" label="CODE" name="CODE" type="string"/>
+<Field __index="13" __sourcePath="{}/BAPI_SALESORDER_GETLIST/export/RETURN/MESSAGE" containerType="SINGLE" label="MESSAGE" name="MESSAGE" type="string"/>
+<Field __index="14" __sourcePath="{}/BAPI_SALESORDER_GETLIST/export/RETURN/LOG_NO" containerType="SINGLE" label="LOG_NO" name="LOG_NO" type="string"/>
+<Field __index="15" __sourcePath="{}/BAPI_SALESORDER_GETLIST/export/RETURN/LOG_MSG_NO" containerType="SINGLE" label="LOG_MSG_NO" name="LOG_MSG_NO" type="string"/>
+<Field __index="16" __sourcePath="{}/BAPI_SALESORDER_GETLIST/export/RETURN/MESSAGE_V1" containerType="SINGLE" label="MESSAGE_V1" name="MESSAGE_V1" type="string"/>
+<Field __index="17" __sourcePath="{}/BAPI_SALESORDER_GETLIST/export/RETURN/MESSAGE_V2" containerType="SINGLE" label="MESSAGE_V2" name="MESSAGE_V2" type="string"/>
+<Field __index="18" __sourcePath="{}/BAPI_SALESORDER_GETLIST/export/RETURN/MESSAGE_V3" containerType="SINGLE" label="MESSAGE_V3" name="MESSAGE_V3" type="string"/>
+<Field __index="19" __sourcePath="{}/BAPI_SALESORDER_GETLIST/export/RETURN/MESSAGE_V4" containerType="SINGLE" label="MESSAGE_V4" name="MESSAGE_V4" type="string"/>
+</Record>
+</Metadata>
+<Metadata __index="20" __referenceCounter="1" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _id="__id" _metadataParentId="6d8a6bc8-3b67-491d-bc53-8c8814bec686" _parent_id="__parent_id" _type="Input" id="d8e2bec5-de21-4d4b-a3f0-1ab34c6aa2f9">
+<Record fieldDelimiter="," name="row" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
+<Field __artificialType="_parent_id" __systemManaged="true" name="__parent_id" type="string"/>
+<Field __artificialType="_id" __systemManaged="true" name="__id" type="string"/>
+<Field __index="20" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/SD_DOC" containerType="SINGLE" label="SD_DOC" name="SD_DOC" type="string"/>
+<Field __index="21" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/ITM_NUMBER" containerType="SINGLE" label="ITM_NUMBER" name="ITM_NUMBER" type="string"/>
+<Field __index="22" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/MATERIAL" containerType="SINGLE" label="MATERIAL" name="MATERIAL" type="string"/>
+<Field __index="23" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/SHORT_TEXT" containerType="SINGLE" label="SHORT_TEXT" name="SHORT_TEXT" type="string"/>
+<Field __index="24" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/DOC_TYPE" containerType="SINGLE" label="DOC_TYPE" name="DOC_TYPE" type="string"/>
+<Field __index="25" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/DOC_DATE" containerType="SINGLE" label="DOC_DATE" name="DOC_DATE" type="string"/>
+<Field __index="26" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/REQ_QTY" containerType="SINGLE" label="REQ_QTY" name="REQ_QTY" type="string"/>
+<Field __index="27" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/REQ_DATE" containerType="SINGLE" label="REQ_DATE" name="REQ_DATE" type="string"/>
+<Field __index="28" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/PURCH_NO" containerType="SINGLE" label="PURCH_NO" name="PURCH_NO" type="string"/>
+<Field __index="29" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/BATCH" containerType="SINGLE" label="BATCH" name="BATCH" type="string"/>
+<Field __index="30" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/VALID_FROM" containerType="SINGLE" label="VALID_FROM" name="VALID_FROM" type="string"/>
+<Field __index="31" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/VALID_TO" containerType="SINGLE" label="VALID_TO" name="VALID_TO" type="string"/>
+<Field __index="32" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/BILL_BLOCK" containerType="SINGLE" label="BILL_BLOCK" name="BILL_BLOCK" type="string"/>
+<Field __index="33" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/DLV_BLOCK" containerType="SINGLE" label="DLV_BLOCK" name="DLV_BLOCK" type="string"/>
+<Field __index="34" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/SOLD_TO" containerType="SINGLE" label="SOLD_TO" name="SOLD_TO" type="string"/>
+<Field __index="35" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/NAME" containerType="SINGLE" label="NAME" name="NAME" type="string"/>
+<Field __index="36" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/EXCHG_RATE" containerType="SINGLE" label="EXCHG_RATE" name="EXCHG_RATE" type="string"/>
+<Field __index="37" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/DLV_QTY" containerType="SINGLE" label="DLV_QTY" name="DLV_QTY" type="string"/>
+<Field __index="38" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/BASE_UOM" containerType="SINGLE" label="BASE_UOM" name="BASE_UOM" type="string"/>
+<Field __index="39" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/NET_PRICE" containerType="SINGLE" label="NET_PRICE" name="NET_PRICE" type="string"/>
+<Field __index="40" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/COND_P_UNT" containerType="SINGLE" label="COND_P_UNT" name="COND_P_UNT" type="string"/>
+<Field __index="41" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/COND_UNIT" containerType="SINGLE" label="COND_UNIT" name="COND_UNIT" type="string"/>
+<Field __index="42" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/NET_VAL_HD" containerType="SINGLE" label="NET_VAL_HD" name="NET_VAL_HD" type="string"/>
+<Field __index="43" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/NET_VALUE" containerType="SINGLE" label="NET_VALUE" name="NET_VALUE" type="string"/>
+<Field __index="44" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/DIVISION" containerType="SINGLE" label="DIVISION" name="DIVISION" type="string"/>
+<Field __index="45" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/DOC_STATUS" containerType="SINGLE" label="DOC_STATUS" name="DOC_STATUS" type="string"/>
+<Field __index="46" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/SALES_GRP" containerType="SINGLE" label="SALES_GRP" name="SALES_GRP" type="string"/>
+<Field __index="47" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/SALES_OFF" containerType="SINGLE" label="SALES_OFF" name="SALES_OFF" type="string"/>
+<Field __index="48" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/SALES_ORG" containerType="SINGLE" label="SALES_ORG" name="SALES_ORG" type="string"/>
+<Field __index="49" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/SALES_UNIT" containerType="SINGLE" label="SALES_UNIT" name="SALES_UNIT" type="string"/>
+<Field __index="50" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/SHIP_POINT" containerType="SINGLE" label="SHIP_POINT" name="SHIP_POINT" type="string"/>
+<Field __index="51" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/DISTR_CHAN" containerType="SINGLE" label="DISTR_CHAN" name="DISTR_CHAN" type="string"/>
+<Field __index="52" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/GI_DATE" containerType="SINGLE" label="GI_DATE" name="GI_DATE" type="string"/>
+<Field __index="53" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/CURRENCY" containerType="SINGLE" label="CURRENCY" name="CURRENCY" type="string"/>
+<Field __index="54" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/PLANT" containerType="SINGLE" label="PLANT" name="PLANT" type="string"/>
+<Field __index="55" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/STORE_LOC" containerType="SINGLE" label="STORE_LOC" name="STORE_LOC" type="string"/>
+<Field __index="56" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/ORD_REASON" containerType="SINGLE" label="ORD_REASON" name="ORD_REASON" type="string"/>
+<Field __index="57" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/REASON_REJ" containerType="SINGLE" label="REASON_REJ" name="REASON_REJ" type="string"/>
+<Field __index="58" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/B_UOM_ISO" containerType="SINGLE" label="B_UOM_ISO" name="B_UOM_ISO" type="string"/>
+<Field __index="59" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/CD_UNT_ISO" containerType="SINGLE" label="CD_UNT_ISO" name="CD_UNT_ISO" type="string"/>
+<Field __index="60" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/S_UNIT_ISO" containerType="SINGLE" label="S_UNIT_ISO" name="S_UNIT_ISO" type="string"/>
+<Field __index="61" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/CURR_ISO" containerType="SINGLE" label="CURR_ISO" name="CURR_ISO" type="string"/>
+<Field __index="62" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/PURCH_NO_C" containerType="SINGLE" label="PURCH_NO_C" name="PURCH_NO_C" type="string"/>
+<Field __index="63" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/EXCHG_RATE_V" containerType="SINGLE" label="EXCHG_RATE_V" name="EXCHG_RATE_V" type="string"/>
+<Field __index="64" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/MAT_EXT" containerType="SINGLE" label="MAT_EXT" name="MAT_EXT" type="string"/>
+<Field __index="65" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/MAT_GUID" containerType="SINGLE" label="MAT_GUID" name="MAT_GUID" type="string"/>
+<Field __index="66" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/MAT_VERS" containerType="SINGLE" label="MAT_VERS" name="MAT_VERS" type="string"/>
+<Field __index="67" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/CREATION_DATE" containerType="SINGLE" label="CREATION_DATE" name="CREATION_DATE" type="string"/>
+<Field __index="68" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/CREATION_TIME" containerType="SINGLE" label="CREATION_TIME" name="CREATION_TIME" type="string"/>
+<Field __index="69" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/STATUS_DOC" containerType="SINGLE" label="STATUS_DOC" name="STATUS_DOC" type="string"/>
+<Field __index="70" __sourcePath="{}/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row/@id" containerType="SINGLE" label="id" name="id" type="integer"/>
+</Record>
+</Metadata>
+<Metadata __index="0" __referenceCounter="1" __sourcePath="{}/Sales_x0020Order" _dataStructure="OBJECT" _id="__id" _type="Output" id="dc22e4ad-ced9-48cb-bfef-2eb8ac26df63">
+<Record fieldDelimiter="," name="Sales_Order" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
+<Field __artificialType="_id" __systemManaged="true" name="__id" type="string"/>
+<Field __index="0" __sourcePath="{}/Sales_x0020Order/Id" containerType="SINGLE" label="Id" name="Id" type="string"/>
+</Record>
+</Metadata>
+<Dictionary>
+<Entry id="DictionaryEntry0" input="true" name="inputPayload" output="false" type="object"/>
+<Entry id="DictionaryEntry1" input="false" name="outputPayload" output="true" type="object"/>
+</Dictionary>
+</Global>
+<Phase number="0">
+<Node enabled="enabled" guiName="Foreach 'row' -&gt; 'Sales Order'" guiX="460" guiY="20" id="FOREACH_ROW_SALES_X0020ORDER" transformClass="com.mulesoft.datamapper.transform.MelRecordTransform" type="REFORMAT">
+<attr name="melScript"><![CDATA[//MEL
+//START -> DO NOT REMOVE
+output.__id = input.__id;
+//END -> DO NOT REMOVE
+output.Id = input.SD_DOC;
+]]></attr>
+</Node>
+<Node cacheInMemory="true" enabled="enabled" fileURL="dict:outputPayload" guiName="Map&lt;k,v&gt; WRITER" guiX="900" guiY="20" id="MAP_WRITER0" type="MAP_WRITER">
+<attr name="mapping"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<clover:element clover:name="Sales Order" xmlns:clover="http://www.cloveretl.com/ns/xmlmapping" clover:inPort="0">
+  <Id>$0.Id</Id>
+</clover:element>]]></attr>
+<attr name="_data_format"><![CDATA[MAP]]></attr>
+</Node>
+<Node charset="UTF-8" enabled="enabled" fileURL="dict:inputPayload" guiName="XML READER" guiX="20" guiY="20" id="XML_READER0" type="XML_READER">
+<attr name="xmlSchemaURL"><![CDATA[./src/main/resources/BAPI_SALESORDER_GETLIST.xsd]]></attr>
+<attr name="mapping"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Context outPort="0" sequenceField="__id" xpath="/BAPI_SALESORDER_GETLIST/tables/SALES_ORDERS/row">
+  <Mapping cloverField="SD_DOC" trim="true" xpath="SD_DOC"/>
+  <Mapping cloverField="ITM_NUMBER" trim="true" xpath="ITM_NUMBER"/>
+  <Mapping cloverField="MATERIAL" trim="true" xpath="MATERIAL"/>
+  <Mapping cloverField="SHORT_TEXT" trim="true" xpath="SHORT_TEXT"/>
+  <Mapping cloverField="DOC_TYPE" trim="true" xpath="DOC_TYPE"/>
+  <Mapping cloverField="DOC_DATE" trim="true" xpath="DOC_DATE"/>
+  <Mapping cloverField="REQ_QTY" trim="true" xpath="REQ_QTY"/>
+  <Mapping cloverField="REQ_DATE" trim="true" xpath="REQ_DATE"/>
+  <Mapping cloverField="PURCH_NO" trim="true" xpath="PURCH_NO"/>
+  <Mapping cloverField="BATCH" trim="true" xpath="BATCH"/>
+  <Mapping cloverField="VALID_FROM" trim="true" xpath="VALID_FROM"/>
+  <Mapping cloverField="VALID_TO" trim="true" xpath="VALID_TO"/>
+  <Mapping cloverField="BILL_BLOCK" trim="true" xpath="BILL_BLOCK"/>
+  <Mapping cloverField="DLV_BLOCK" trim="true" xpath="DLV_BLOCK"/>
+  <Mapping cloverField="SOLD_TO" trim="true" xpath="SOLD_TO"/>
+  <Mapping cloverField="NAME" trim="true" xpath="NAME"/>
+  <Mapping cloverField="EXCHG_RATE" trim="true" xpath="EXCHG_RATE"/>
+  <Mapping cloverField="DLV_QTY" trim="true" xpath="DLV_QTY"/>
+  <Mapping cloverField="BASE_UOM" trim="true" xpath="BASE_UOM"/>
+  <Mapping cloverField="NET_PRICE" trim="true" xpath="NET_PRICE"/>
+  <Mapping cloverField="COND_P_UNT" trim="true" xpath="COND_P_UNT"/>
+  <Mapping cloverField="COND_UNIT" trim="true" xpath="COND_UNIT"/>
+  <Mapping cloverField="NET_VAL_HD" trim="true" xpath="NET_VAL_HD"/>
+  <Mapping cloverField="NET_VALUE" trim="true" xpath="NET_VALUE"/>
+  <Mapping cloverField="DIVISION" trim="true" xpath="DIVISION"/>
+  <Mapping cloverField="DOC_STATUS" trim="true" xpath="DOC_STATUS"/>
+  <Mapping cloverField="SALES_GRP" trim="true" xpath="SALES_GRP"/>
+  <Mapping cloverField="SALES_OFF" trim="true" xpath="SALES_OFF"/>
+  <Mapping cloverField="SALES_ORG" trim="true" xpath="SALES_ORG"/>
+  <Mapping cloverField="SALES_UNIT" trim="true" xpath="SALES_UNIT"/>
+  <Mapping cloverField="SHIP_POINT" trim="true" xpath="SHIP_POINT"/>
+  <Mapping cloverField="DISTR_CHAN" trim="true" xpath="DISTR_CHAN"/>
+  <Mapping cloverField="GI_DATE" trim="true" xpath="GI_DATE"/>
+  <Mapping cloverField="CURRENCY" trim="true" xpath="CURRENCY"/>
+  <Mapping cloverField="PLANT" trim="true" xpath="PLANT"/>
+  <Mapping cloverField="STORE_LOC" trim="true" xpath="STORE_LOC"/>
+  <Mapping cloverField="ORD_REASON" trim="true" xpath="ORD_REASON"/>
+  <Mapping cloverField="REASON_REJ" trim="true" xpath="REASON_REJ"/>
+  <Mapping cloverField="B_UOM_ISO" trim="true" xpath="B_UOM_ISO"/>
+  <Mapping cloverField="CD_UNT_ISO" trim="true" xpath="CD_UNT_ISO"/>
+  <Mapping cloverField="S_UNIT_ISO" trim="true" xpath="S_UNIT_ISO"/>
+  <Mapping cloverField="CURR_ISO" trim="true" xpath="CURR_ISO"/>
+  <Mapping cloverField="PURCH_NO_C" trim="true" xpath="PURCH_NO_C"/>
+  <Mapping cloverField="EXCHG_RATE_V" trim="true" xpath="EXCHG_RATE_V"/>
+  <Mapping cloverField="MAT_EXT" trim="true" xpath="MAT_EXT"/>
+  <Mapping cloverField="MAT_GUID" trim="true" xpath="MAT_GUID"/>
+  <Mapping cloverField="MAT_VERS" trim="true" xpath="MAT_VERS"/>
+  <Mapping cloverField="CREATION_DATE" trim="true" xpath="CREATION_DATE"/>
+  <Mapping cloverField="CREATION_TIME" trim="true" xpath="CREATION_TIME"/>
+  <Mapping cloverField="STATUS_DOC" trim="true" xpath="STATUS_DOC"/>
+  <Mapping cloverField="id" trim="true" xpath="@id"/>
+</Context>
+]]></attr>
+<attr name="_data_format"><![CDATA[XML]]></attr>
+<attr name="__rootGlobalElementName"><![CDATA[BAPI_SALESORDER_GETLIST]]></attr>
+</Node>
+<Edge debugMode="true" fromNode="FOREACH_ROW_SALES_X0020ORDER:0" guiBendpoints="" id="Edge1" inPort="Port 0 (in)" metadata="dc22e4ad-ced9-48cb-bfef-2eb8ac26df63" outPort="Port 0 (out)" toNode="MAP_WRITER0:0"/>
+<Edge debugMode="true" fromNode="XML_READER0:0" guiBendpoints="" id="Edge0" inPort="Port 0 (in)" metadata="d8e2bec5-de21-4d4b-a3f0-1ab34c6aa2f9" outPort="Port 0 (out)" toNode="FOREACH_ROW_SALES_X0020ORDER:0"/>
+</Phase>
+</Graph>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" 
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	version="EE-3.5.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd">
+    <data-mapper:config name="Opportunity_to_BAPI_SALESORDER_CREATEFROMDAT2" transformationGraphPath="opportunity_to_bapi_salesorder_createfromdat2.grf" doc:name="Opportunity_to_BAPI_SALESORDER_CREATEFROMDAT2"/>
+    <data-mapper:config name="BAPI_SALESORDER_GETLIST_to_Sales_Order" transformationGraphPath="bapi_salesorder_getlist_to_sales_order.grf" doc:name="BAPI_SALESORDER_GETLIST_to_Sales_Order"/>
+    <data-mapper:config name="Opportunity_to_BAPI_SALESORDER_CHANGE" transformationGraphPath="opportunity_to_bapi_salesorder_change.grf" doc:name="Opportunity_to_BAPI_SALESORDER_CHANGE"/>
+    <data-mapper:config name="BAPI_CUSTOMER_FIND_to_Customer" transformationGraphPath="bapi_customer_find_to_customer.grf" doc:name="BAPI_CUSTOMER_FIND_to_Customer"/>
+    <data-mapper:config name="BAPI_ISAORDER_GETDETAILEDLIST_to_Sales_Order" transformationGraphPath="bapi_isaorder_getdetailedlist_to_sales_order.grf" doc:name="BAPI_ISAORDER_GETDETAILEDLIST_to_Sales_Order"/>
+    <data-mapper:config name="Account_to_BAPI_CUSTOMER_CREATEFROMDATA1" transformationGraphPath="account_to_bapi_customer_createfromdata1.grf" doc:name="Account_to_BAPI_CUSTOMER_CREATEFROMDATA1"/>
+    <data-mapper:config name="BAPI_CUSTOMER_CREATEFROMDATA1_to_Customer_Number_Wrapper" transformationGraphPath="bapi_customer_createfromdata1_to_customer_number_wrapper.grf" doc:name="BAPI_CUSTOMER_CREATEFROMDATA1_to_Customer_Number_Wrapper"/>
+    <data-mapper:config name="BAPI_CUSTOMER_GETSALESAREAS_to_Sales_Areas" transformationGraphPath="bapi_customer_getsalesareas_to_sales_areas.grf" doc:name="BAPI_CUSTOMER_GETSALESAREAS_to_Sales_Areas"/>
+	<batch:job name="syncOpportunitiesBatch">
+		<batch:threading-profile poolExhaustedAction="WAIT" />
+		<batch:process-records>
+			<batch:step name="foreachOpportunityInSalesforceGetSalesOrderInSapStep">
+                <logger message="22222 sf opp  #[payload]" level="INFO" doc:name="Logger"/>
+                <enricher source="#[payload is NullPayload ? null : payload['Id']]" target="#[payload['SALESDOCUMENT']]" doc:name="Message Enricher">
+                    <processor-chain doc:name="Processor Chain">
+                        <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_SALESORDER_GETLIST">
+                            <sap:definition><![CDATA[<jco>
+	<import>
+		<field name="PURCHASE_ORDER_NUMBER">#[payload['Id']]</field>
+	</import>
+</jco>]]></sap:definition>
+
+                        </sap:outbound-endpoint>
+                        <data-mapper:transform config-ref="BAPI_SALESORDER_GETLIST_to_Sales_Order" doc:name="BAPI_SALESORDER_GETLIST to Sales Order"/>
+                    </processor-chain>
+                </enricher>
+                <choice doc:name="Choice">
+                    <when expression="#[payload['SALESDOCUMENT'] != null]">
+                        <enricher source="#[payload]" target="#[payload['salesOrderInSap']]" doc:name="store result in record var 'salesorderInSap'">
+                            <processor-chain doc:name="Processor Chain">
+                                <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_ISAORDER_GETDETAILEDLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="SAP BAPI_ISAORDER_GETDETAILEDLIST" evaluateFunctionResponse="true">
+                                    <sap:definition><![CDATA[<jco>
+	<import>
+		<structure name="I_BAPI_VIEW">
+			<field name="ITEM">X</field>
+			<field name="SDCOND">X</field>
+		</structure>
+	</import>
+	<tables>
+		<table name="SALES_DOCUMENTS">
+			<row>
+				<field name="VBELN">#[payload['SALESDOCUMENT']]</field>
+			</row>
+		</table>
+	</tables>
+</jco>]]></sap:definition>
+
+                                </sap:outbound-endpoint>
+                                <data-mapper:transform config-ref="BAPI_ISAORDER_GETDETAILEDLIST_to_Sales_Order" doc:name="BAPI_ISAORDER_GETDETAILEDLIST to Sales Order"/>
+                            </processor-chain>
+                        </enricher>
+                    </when>
+                    <otherwise>
+                        <expression-component doc:name="Expression"><![CDATA[payload['salesOrderInSap'] = NullPayload.getInstance();]]></expression-component>
+                    </otherwise>
+                </choice>
+			</batch:step>
+			 <batch:step name="findOrCreateCustomerInSapSetp" accept-expression="'syncAccount' == '${account.sync.policy}'">
+                <logger message="33333 create customer in SAP" level="INFO" doc:name="Logger"/>
+                <enricher source="#[payload[0]['CustomerNumber'] == null ? NullPayload.getInstance() : payload[0]]" target="#[payload['customerInSap']]" doc:name="store result in customerInSap">
+                    <processor-chain doc:name="Processor Chain">
+                        <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_CUSTOMER_FIND" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Get Customer by Name">
+                            <sap:definition><![CDATA[<jco>
+	<import>
+		<field name="MAX_CNT">0</field>
+		<field name="PL_HOLD">X</field>
+	</import>
+  	<tables>
+		<table name="SELOPT_TAB">
+			<row id="0">
+				<field name="TABNAME">KNA1</field>
+				<field name="FIELDNAME">NAME1</field>
+				<field name="FIELDVALUE">#[org.apache.commons.lang3.StringEscapeUtils.escapeXml(payload['Account']['Name'])]</field>
+			</row>
+		</table>
+	</tables>
+</jco>
+]]></sap:definition>
+
+                        </sap:outbound-endpoint>
+                        <data-mapper:transform config-ref="BAPI_CUSTOMER_FIND_to_Customer" doc:name="BAPI_CUSTOMER_FIND to Customer"/>
+                    </processor-chain>
+                </enricher>
+                <choice doc:name="Choice">
+                    <when expression="#[payload['customerInSap'] is NullPayload]">
+                        <expression-component doc:name="set sales area"><![CDATA[payload['SalesOrganization'] = '${account.sapSalesOrganization}';
+payload['DistributionChannel'] = '${account.sapDistributionChannel}';
+payload['Division'] = '${account.sapDivision}';
+payload['RefCustomer'] = '${account.sapRefCustomer}';
+payload['CustomerName'] = '${account.sapRefCustomer}';
+]]></expression-component>
+                        <enricher doc:name="store result in CustomerNumber" target="#[payload['CustomerNumber']]" source="#[payload['CustomerNumber']]">
+	                        <processor-chain doc:name="Processor Chain">
+                                <data-mapper:transform config-ref="Account_to_BAPI_CUSTOMER_CREATEFROMDATA1" doc:name="Account to BAPI_CUSTOMER_CREATEFROMDATA1"/>
+                                <sap:outbound-endpoint exchange-pattern="request-response" type="function" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_CUSTOMER_CREATEFROMDATA1" bapiTransaction="true" connector-ref="SAP" evaluateFunctionResponse="true" functionName="BAPI_CUSTOMER_CREATEFROMDATA1"/>
+                                <data-mapper:transform config-ref="BAPI_CUSTOMER_CREATEFROMDATA1_to_Customer_Number_Wrapper" doc:name="BAPI_CUSTOMER_CREATEFROMDATA1 to Customer Number Wrapper"/>
+	                        </processor-chain>
+                        </enricher>
+                    </when>
+                    <otherwise>
+                        <enricher target="#[payload['CustomerNumber']]" doc:name="store result in CustomerNumber">
+     	                   <expression-transformer expression="#[payload['customerInSap']['CustomerNumber']]" doc:name="get new account id"/>
+                        </enricher>
+                        <logger message="4444 customer number #[payload['CustomerNumber']]  #[payload['customerInSap']['CustomerNumber']]" level="INFO" doc:name="Logger"/>
+                        <enricher doc:name="store Sales Area">
+                            <processor-chain doc:name="Processor Chain">
+                                <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_CUSTOMER_GETSALESAREAS" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_CUSTOMER_GETSALESAREAS">
+                                    <sap:definition><![CDATA[<jco>
+	<import>
+		<field name="CUSTOMERNO">#[payload['customerInSap']['CustomerNumber']]</field>
+	</import>
+</jco>]]></sap:definition>
+
+                                </sap:outbound-endpoint>
+                                <data-mapper:transform config-ref="BAPI_CUSTOMER_GETSALESAREAS_to_Sales_Areas" doc:name="BAPI_CUSTOMER_GETSALESAREAS to Sales Areas"/>
+                            </processor-chain>
+                            <enrich source="#[payload[0]['SalesOrganization']]" target="#[payload['SalesOrganization']]"/>
+                            <enrich source="#[payload[0]['DistributionChannel']]" target="#[payload['DistributionChannel']]"/>
+                            <enrich source="#[payload[0]['Division']]" target="#[payload['Division']]"/>
+                        </enricher>
+                    </otherwise>
+                </choice>
+            </batch:step>
+            <batch:step name="setDummyAccountIdStep" accept-expression="'assignDummyAccount' == '${account.sync.policy}'">
+                <expression-component doc:name="set customer number"><![CDATA[payload.put('CustomerNumber', '${account.sapCustomerNumber}');]]></expression-component>
+            </batch:step>
+			<batch:step name="foreachOpportunityInSalesforceInsertSalesOrderInSapStep" accept-expression="payload['salesOrderInSap'] is NullPayload">
+
+                <expression-component doc:name="assign numbers to opportunity line items"><![CDATA[payload['CloseDate'] = payload['CloseDate'].replace("-", "");
+if (payload['OpportunityLineItems'] != null) {
+	num = 0;
+	for (record : payload['OpportunityLineItems']['records']) {
+		num += 10;
+		record['ITM_NUMBER'] =String.format("%06d", Integer.parseInt(num));
+	}
+}]]></expression-component>
+                <data-mapper:transform config-ref="Opportunity_to_BAPI_SALESORDER_CREATEFROMDAT2" doc:name="Opportunity to BAPI_SALESORDER_CREATEFROMDAT2"/>
+                <byte-array-to-string-transformer doc:name="Byte Array to String"/>
+                <logger message="55555555 Opportunities to create: #[payload]" level="INFO" doc:name="log Opportunities to create"/>
+                <sap:outbound-endpoint connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_CREATEFROMDAT2" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_SALESORDER_CREATEFROMDAT2" bapiTransaction="true" exchange-pattern="request-response" evaluateFunctionResponse="true"/>
+                <byte-array-to-string-transformer doc:name="Byte Array to String"/>
+                <logger message="Insert result: #[payload]" level="INFO" doc:name="log Result"/>
+                <expression-component doc:name="don't do update"><![CDATA[payload = new HashMap();
+payload.put('salesOrderInSap', NullPayload.getInstance());]]></expression-component>
+			</batch:step>
+            <batch:step name="foreachOpportunityInSalesforceUpdatesalesorderInSapStep" accept-expression="!(payload['salesOrderInSap'] is NullPayload)">
+
+                <expression-component doc:name="assign numbers to opportunity line items"><![CDATA[payload['CloseDate'] = payload['CloseDate'].replace("-", "");
+payload.put('CurrencyIsoCode','EUR');
+int max = 0;
+for (item : payload['salesOrderInSap']['Items']) {
+	max = Math.max(max, Integer.parseInt(item['ITM_NUMBER']));
+}
+if (payload['OpportunityLineItems'] != null) {
+	for (record : payload['OpportunityLineItems']['records']) {
+		max += 10;
+		record['ITM_NUMBER'] =String.format("%06d", Integer.parseInt(max));
+	}
+}]]></expression-component>
+
+                <data-mapper:transform config-ref="Opportunity_to_BAPI_SALESORDER_CHANGE" doc:name="Opportunity to BAPI_SALESORDER_CHANGE"/>
+                <byte-array-to-string-transformer doc:name="Byte Array to String"/>
+                <logger message="666666666 Opportunities to update: #[payload]" level="INFO" doc:name="Log Opportunities to update"/>
+                <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_CHANGE" xmlVersion="2" outputXml="true" bapiTransaction="true" responseTimeout="10000" doc:name="BAPI_SALESORDER_CHANGE" evaluateFunctionResponse="true"/>
+                <byte-array-to-string-transformer doc:name="Byte Array to String"/>
+                <logger message="Update result: #[payload]" level="INFO" doc:name="log Result"/>
+            </batch:step>
+		</batch:process-records>
+		<batch:on-complete>
+			<json:object-to-json-transformer
+				doc:name="transform BatchJobInstance to JSON" />
+			<logger level="INFO" doc:name="log 'Migration process has finished'"
+				message="Migration process has finished: #[payload]" />
+		</batch:on-complete>
+	</batch:job>
+
+</mule>

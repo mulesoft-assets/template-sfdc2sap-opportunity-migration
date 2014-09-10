@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<configuration>
+	<placeholders>
+		<placeholder id="template_name">SFDC2SAP-opportunity-migration</placeholder>
+	</placeholders>
+	<sections>
+		<section id="use_case">
+			This Anypoint Template should serve as a foundation for setting an offline sync of won opportunities from Salesforce to sales orders in SAP.
+			Everytime there is a new won opportunity or a change in already existing one in Salesforce instance, the template will fetch it and send it to SAP to upsert sales order there.
+			
+			Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
+			
+			As implemented, this Anypoint Template leverage the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
+			The batch job is divided in Input, Process and On Complete stages.
+			The integration is triggered by poll to Salesforce won opportunities. New or modified won opportunities are passed to the batch as input.
+			In the batch the sales order is fetched from SAP by its purchase order number equal to opportunity ID.
+			If it exists, more sales order details are fetched from SAP.
+			In next batch step customer is looked up by opportunity account name if sync policy is set to synchronize accounts.
+			If the customer is found its sales areas are fetched from SAP and first one is selected to be used in sales order creation.
+			If it is not found, then new customer is created with preconfigured sales area.
+			Template doesn't support changing customer of the existing sales order.
+			Next batch step is executed only if preconfigured (dummy) account is configured to be used. In that step also preconfigured sales area is set up.
+			Account synchronization policy must be either `syncAccount` or `assignDummyAccount`. Sales order creation will fail if it has no account (ship to) assigned.
+			Next two steps creates or updates sales order in SAP. 
+			Finally during the On Complete stage the Anypoint Template will log output statistics data into the console.
+		</section>
+		<section id="running_on_studio">
+		<![CDATA[
+In order to make this Anypoint Template run on Mule Studio there are a few extra steps that needs to be made.
+Please check this Documentation Page:
+
++ [Enabling Your Studio Project for SAP](http://www.mulesoft.org/documentation/display/current/SAP+Connector#SAPConnector-EnablingYourStudioProjectforSAP)
+		]]>
+		</section>
+		<section id="considerations">
+		<![CDATA[
+To make this Anypoint Template run, there are certain preconditions that must be considered. All of them deal with the preparations in both, that must be made in order for all to run smoothly.
+**Failling to do so could lead to unexpected behavior of the template.**
+
+Before continue with the use of this Anypoint Template, you may want to check out this [Documentation Page](http://www.mulesoft.org/documentation/display/current/SAP+Connector#SAPConnector-EnablingYourStudioProjectforSAP), that will teach you how to work 
+with SAP and Anypoint Studio.
+
+## Disclaimer
+
+This Anypoint template uses a few private Maven dependencies in oder to work. If you intend to run this template with Maven support, please continue reading.
+
+You will find that there are three dependencies in the pom.xml file that begin with the following group id: 
+	**com.sap.conn.jco** 
+These dependencies are private for Mulesoft and will cause you application not to build from a Maven command line. You need to replace them with "provided" scope and copy the libraries into the build path.
+		]]>
+		</section>
+		<section id="api_calls">&#160;</section>
+		<section id="application_configuration">
+		<![CDATA[
+**Common configuration**
+
++ poll.frequencyMillis `10000`
++ poll.startDelayMillis `1000`
++ watermark.default.expression `2014-08-14T10:15:00.000Z`
++ page.size `100`
++ timeOffsetBetweenSapAndSalesforce `-4000`
+
++ account.sync.policy `syncAccount`
++ account.sapCustomerNumber `0000001175`
++ account.sapSalesOrganization `302000`
++ account.sapDistributionChannel `30`
++ account.sapDivision `00`
++ account.sapRefCustomer `0000000255`
+		
+**SalesForce Connector configuration**
+
++ sfdc.username `bob.dylan@sfdc`
++ sfdc.password `DylanPassword123`
++ sfdc.securityToken `avsfwCUl7apQs56Xq2AKi3X`
++ sfdc.url `https://test.salesforce.com/services/Soap/u/28.0`
+
+**SAP Connector configuration**
+
++ sap.jco.ashost `your.sap.address.com`
++ sap.jco.user `SAP_USER`
++ sap.jco.passwd `SAP_PASS`
++ sap.jco.sysnr `14`
++ sap.jco.client `800`
++ sap.jco.lang `EN`
++ sap.default.accountGroup `ZAG2`
+]]>
+		</section>
+	</sections>
+</configuration>
