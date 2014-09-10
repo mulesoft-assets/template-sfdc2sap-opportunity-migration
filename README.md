@@ -1,5 +1,5 @@
 
-# Anypoint Template: SFDC2SAP-opportunity-broadcast
+# Anypoint Template: SFDC2SAP-opportunity-migration
 
 + [License Agreement](#licenseagreement)
 + [Use Case](#usecase)
@@ -26,7 +26,7 @@ Note that using this template is subject to the conditions of this [License Agre
 Please review the terms of the license before downloading and using this template. In short, you are allowed to use the template for free with Mule ESB Enterprise Edition, CloudHub, or as a trial in Anypoint Studio.
 
 # Use Case <a name="usecase"/>
-This Anypoint Template should serve as a foundation for setting an online sync of won opportunities from Salesforce to sales orders in SAP.
+This Anypoint Template should serve as a foundation for setting an offline sync of won opportunities from Salesforce to sales orders in SAP.
 			Everytime there is a new won opportunity or a change in already existing one in Salesforce instance, the template will fetch it and send it to SAP to upsert sales order there.
 			
 			Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
@@ -113,7 +113,7 @@ column='486'
 
 
 # Run it! <a name="runit"/>
-Simple steps to get SFDC2SAP-opportunity-broadcast running.
+Simple steps to get SFDC2SAP-opportunity-migration running.
 
 
 ## Running on premise <a name="runonopremise"/>
@@ -199,7 +199,7 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + sap.default.accountGroup `ZAG2`
 
 # API Calls <a name="apicalls"/>
-Â 
+ 
 
 
 # Customize It!<a name="customizeit"/>
