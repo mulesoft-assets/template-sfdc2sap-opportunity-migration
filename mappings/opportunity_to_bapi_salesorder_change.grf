@@ -240,7 +240,7 @@
 <Field __sourcePath="{}/Opportunity/salesOrderInSap/Conditions/ITM_x005fNUMBER" containerType="SINGLE" label="ITM_NUMBER" name="ITM_NUMBER" type="string"/>
 </Record>
 </Metadata>
-<Metadata __index="9" __referenceCounter="1" __sourcePath="{}/Opportunity/salesOrderInSap/Items" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _id="__id" _metadataParentId="aec83820-5271-4f5a-8cd2-005805928eb1" _parent_id="__parent_id" _type="Input" id="5b6130c0-171b-431c-a210-a11745b21758">
+<Metadata __index="9" __referenceCounter="2" __sourcePath="{}/Opportunity/salesOrderInSap/Items" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _id="__id" _metadataParentId="aec83820-5271-4f5a-8cd2-005805928eb1" _parent_id="__parent_id" _type="Input" id="5b6130c0-171b-431c-a210-a11745b21758">
 <Record fieldDelimiter="," name="Items" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
 <Field __artificialType="_parent_id" __systemManaged="true" name="__parent_id" type="string"/>
 <Field __artificialType="_id" __systemManaged="true" name="__id" type="string"/>
@@ -469,7 +469,7 @@
 <Field __index="363" __sourcePath="{}/BAPI_SALESORDER_CHANGE/tables/ORDER_CFGS_VK/row/@id" containerType="SINGLE" label="id" name="id" type="integer"/>
 </Record>
 </Metadata>
-<Metadata __index="364" __referenceCounter="1" __sourcePath="{}/BAPI_SALESORDER_CHANGE/tables/ORDER_ITEM_IN/row" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _id="__id" _metadataParentId="d24606dc-958e-4a45-ab19-74255b3a2250" _parent_id="__parent_id" _type="Output" id="f1b87fe8-f0bd-4323-903c-f5bd137426f6">
+<Metadata __index="364" __referenceCounter="2" __sourcePath="{}/BAPI_SALESORDER_CHANGE/tables/ORDER_ITEM_IN/row" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _id="__id" _metadataParentId="d24606dc-958e-4a45-ab19-74255b3a2250" _parent_id="__parent_id" _type="Output" id="f1b87fe8-f0bd-4323-903c-f5bd137426f6">
 <Record fieldDelimiter="," name="row" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
 <Field __artificialType="_parent_id" __systemManaged="true" name="__parent_id" type="string"/>
 <Field __artificialType="_id" __systemManaged="true" name="__id" type="string"/>
@@ -1604,6 +1604,206 @@
         <clover:element clover:name="BUSINESS_PARTNER_NO">$4.BUSINESS_PARTNER_NO</clover:element>
         <clover:element clover:name="REPORTING_FREQ">$4.REPORTING_FREQ</clover:element>
       </row>
+      <row id="$8.id" clover:inPort="8" clover:key="__parent_id" clover:parentKey="__id">
+        <clover:element clover:name="ITM_NUMBER">$8.ITM_NUMBER</clover:element>
+        <clover:element clover:name="HG_LV_ITEM">$8.HG_LV_ITEM</clover:element>
+        <clover:element clover:name="PO_ITM_NO">$8.PO_ITM_NO</clover:element>
+        <MATERIAL>$8.MATERIAL</MATERIAL>
+        <clover:element clover:name="ALT_TO_ITM">$8.ALT_TO_ITM</clover:element>
+        <clover:element clover:name="CUST_MAT22">$8.CUST_MAT22</clover:element>
+        <BATCH>$8.BATCH</BATCH>
+        <clover:element clover:name="DLV_GROUP">$8.DLV_GROUP</clover:element>
+        <clover:element clover:name="PART_DLV">$8.PART_DLV</clover:element>
+        <clover:element clover:name="REASON_REJ">$8.REASON_REJ</clover:element>
+        <clover:element clover:name="BILL_BLOCK">$8.BILL_BLOCK</clover:element>
+        <clover:element clover:name="BILL_DATE">$8.BILL_DATE</clover:element>
+        <PLANT>$8.PLANT</PLANT>
+        <clover:element clover:name="STORE_LOC">$8.STORE_LOC</clover:element>
+        <clover:element clover:name="TARGET_QTY">$8.TARGET_QTY</clover:element>
+        <clover:element clover:name="TARGET_QU">$8.TARGET_QU</clover:element>
+        <clover:element clover:name="T_UNIT_ISO">$8.T_UNIT_ISO</clover:element>
+        <clover:element clover:name="ITEM_CATEG">$8.ITEM_CATEG</clover:element>
+        <clover:element clover:name="SHORT_TEXT">$8.SHORT_TEXT</clover:element>
+        <clover:element clover:name="PRC_GROUP1">$8.PRC_GROUP1</clover:element>
+        <clover:element clover:name="PRC_GROUP2">$8.PRC_GROUP2</clover:element>
+        <clover:element clover:name="PRC_GROUP3">$8.PRC_GROUP3</clover:element>
+        <clover:element clover:name="PRC_GROUP4">$8.PRC_GROUP4</clover:element>
+        <clover:element clover:name="PRC_GROUP5">$8.PRC_GROUP5</clover:element>
+        <clover:element clover:name="PROD_HIERA">$8.PROD_HIERA</clover:element>
+        <clover:element clover:name="MATL_GROUP">$8.MATL_GROUP</clover:element>
+        <clover:element clover:name="PURCH_NO_C">$8.PURCH_NO_C</clover:element>
+        <clover:element clover:name="PURCH_DATE">$8.PURCH_DATE</clover:element>
+        <clover:element clover:name="PO_METHOD">$8.PO_METHOD</clover:element>
+        <clover:element clover:name="REF_1">$8.REF_1</clover:element>
+        <clover:element clover:name="PURCH_NO_S">$8.PURCH_NO_S</clover:element>
+        <clover:element clover:name="PO_DAT_S">$8.PO_DAT_S</clover:element>
+        <clover:element clover:name="PO_METH_S">$8.PO_METH_S</clover:element>
+        <clover:element clover:name="REF_1_S">$8.REF_1_S</clover:element>
+        <clover:element clover:name="POITM_NO_S">$8.POITM_NO_S</clover:element>
+        <clover:element clover:name="PRICE_GRP">$8.PRICE_GRP</clover:element>
+        <clover:element clover:name="CUST_GROUP">$8.CUST_GROUP</clover:element>
+        <clover:element clover:name="SALES_DIST">$8.SALES_DIST</clover:element>
+        <clover:element clover:name="PRICE_LIST">$8.PRICE_LIST</clover:element>
+        <INCOTERMS1>$8.INCOTERMS1</INCOTERMS1>
+        <INCOTERMS2>$8.INCOTERMS2</INCOTERMS2>
+        <clover:element clover:name="ORDCOMP_IN">$8.ORDCOMP_IN</clover:element>
+        <clover:element clover:name="BILL_SCHED">$8.BILL_SCHED</clover:element>
+        <clover:element clover:name="INVO_SCHED">$8.INVO_SCHED</clover:element>
+        <clover:element clover:name="MN_INVOICE">$8.MN_INVOICE</clover:element>
+        <clover:element clover:name="EX_RATE_FI">$8.EX_RATE_FI</clover:element>
+        <clover:element clover:name="ADD_VAL_DY">$8.ADD_VAL_DY</clover:element>
+        <clover:element clover:name="FIX_VAL_DY">$8.FIX_VAL_DY</clover:element>
+        <PMNTTRMS>$8.PMNTTRMS</PMNTTRMS>
+        <clover:element clover:name="PYMT_METH">$8.PYMT_METH</clover:element>
+        <clover:element clover:name="ACCNT_ASGN">$8.ACCNT_ASGN</clover:element>
+        <clover:element clover:name="EXCHG_RATE">$8.EXCHG_RATE</clover:element>
+        <clover:element clover:name="PRICE_DATE">$8.PRICE_DATE</clover:element>
+        <clover:element clover:name="SERV_DATE">$8.SERV_DATE</clover:element>
+        <clover:element clover:name="DUNN_KEY">$8.DUNN_KEY</clover:element>
+        <clover:element clover:name="DUNN_BLOCK">$8.DUNN_BLOCK</clover:element>
+        <PROMOTION>$8.PROMOTION</PROMOTION>
+        <clover:element clover:name="PMTGAR_PRO">$8.PMTGAR_PRO</clover:element>
+        <clover:element clover:name="DOC_NUM_FI">$8.DOC_NUM_FI</clover:element>
+        <clover:element clover:name="DEPARTM_NO">$8.DEPARTM_NO</clover:element>
+        <clover:element clover:name="REC_POINT">$8.REC_POINT</clover:element>
+        <CSTCNDGRP1>$8.CSTCNDGRP1</CSTCNDGRP1>
+        <CSTCNDGRP2>$8.CSTCNDGRP2</CSTCNDGRP2>
+        <CSTCNDGRP3>$8.CSTCNDGRP3</CSTCNDGRP3>
+        <CSTCNDGRP4>$8.CSTCNDGRP4</CSTCNDGRP4>
+        <CSTCNDGRP5>$8.CSTCNDGRP5</CSTCNDGRP5>
+        <clover:element clover:name="DLV_TIME">$8.DLV_TIME</clover:element>
+        <clover:element clover:name="SALES_UNIT">$8.SALES_UNIT</clover:element>
+        <clover:element clover:name="S_UNIT_ISO">$8.S_UNIT_ISO</clover:element>
+        <clover:element clover:name="TRG_QTY_NO">$8.TRG_QTY_NO</clover:element>
+        <clover:element clover:name="TRGQTY_DEN">$8.TRGQTY_DEN</clover:element>
+        <clover:element clover:name="RNDDLV_QTY">$8.RNDDLV_QTY</clover:element>
+        <MAXDEVAMNT>$8.MAXDEVAMNT</MAXDEVAMNT>
+        <MAXDEVPER>$8.MAXDEVPER</MAXDEVPER>
+        <clover:element clover:name="MAXDEV_DAY">$8.MAXDEV_DAY</clover:element>
+        <clover:element clover:name="USAGE_IND">$8.USAGE_IND</clover:element>
+        <clover:element clover:name="FIXED_QUAN">$8.FIXED_QUAN</clover:element>
+        <clover:element clover:name="UNLMT_DLV">$8.UNLMT_DLV</clover:element>
+        <OVERDLVTOL>$8.OVERDLVTOL</OVERDLVTOL>
+        <clover:element clover:name="UNDDLV_TOL">$8.UNDDLV_TOL</clover:element>
+        <DIVISION>$8.DIVISION</DIVISION>
+        <SALQTYNUM>$8.SALQTYNUM</SALQTYNUM>
+        <SALQTYDEN>$8.SALQTYDEN</SALQTYDEN>
+        <clover:element clover:name="GROSS_WGHT">$8.GROSS_WGHT</clover:element>
+        <clover:element clover:name="NET_WEIGHT">$8.NET_WEIGHT</clover:element>
+        <clover:element clover:name="UNTOF_WGHT">$8.UNTOF_WGHT</clover:element>
+        <clover:element clover:name="UNOF_WTISO">$8.UNOF_WTISO</clover:element>
+        <VOLUME>$8.VOLUME</VOLUME>
+        <VOLUNIT>$8.VOLUNIT</VOLUNIT>
+        <VOLUNITISO>$8.VOLUNITISO</VOLUNITISO>
+        <clover:element clover:name="DLV_PRIO">$8.DLV_PRIO</clover:element>
+        <clover:element clover:name="SHIP_POINT">$8.SHIP_POINT</clover:element>
+        <ROUTE>$8.ROUTE</ROUTE>
+        <clover:element clover:name="CREATED_BY">$8.CREATED_BY</clover:element>
+        <clover:element clover:name="TAX_CLASS1">$8.TAX_CLASS1</clover:element>
+        <clover:element clover:name="TAX_CLASS2">$8.TAX_CLASS2</clover:element>
+        <clover:element clover:name="TAX_CLASS3">$8.TAX_CLASS3</clover:element>
+        <clover:element clover:name="TAX_CLASS4">$8.TAX_CLASS4</clover:element>
+        <clover:element clover:name="TAX_CLASS5">$8.TAX_CLASS5</clover:element>
+        <clover:element clover:name="TAX_CLASS6">$8.TAX_CLASS6</clover:element>
+        <clover:element clover:name="TAX_CLASS7">$8.TAX_CLASS7</clover:element>
+        <clover:element clover:name="TAX_CLASS8">$8.TAX_CLASS8</clover:element>
+        <clover:element clover:name="TAX_CLASS9">$8.TAX_CLASS9</clover:element>
+        <clover:element clover:name="MAT_PR_GRP">$8.MAT_PR_GRP</clover:element>
+        <clover:element clover:name="VAL_TYPE">$8.VAL_TYPE</clover:element>
+        <clover:element clover:name="FIXDAT_QTY">$8.FIXDAT_QTY</clover:element>
+        <clover:element clover:name="BOMEXPL_NO">$8.BOMEXPL_NO</clover:element>
+        <RESANALKEY>$8.RESANALKEY</RESANALKEY>
+        <clover:element clover:name="REQMTS_TYP">$8.REQMTS_TYP</clover:element>
+        <clover:element clover:name="NO_GR_POST">$8.NO_GR_POST</clover:element>
+        <clover:element clover:name="BUS_TRANST">$8.BUS_TRANST</clover:element>
+        <clover:element clover:name="OVERHD_KEY">$8.OVERHD_KEY</clover:element>
+        <clover:element clover:name="CSTG_SHEET">$8.CSTG_SHEET</clover:element>
+        <MATFRGTGRP>$8.MATFRGTGRP</MATFRGTGRP>
+        <PLDLVSHDIN>$8.PLDLVSHDIN</PLDLVSHDIN>
+        <clover:element clover:name="SEQ_NO">$8.SEQ_NO</clover:element>
+        <clover:element clover:name="BIL_FORM">$8.BIL_FORM</clover:element>
+        <clover:element clover:name="DLI_PROFIL">$8.DLI_PROFIL</clover:element>
+        <clover:element clover:name="REV_TYPE">$8.REV_TYPE</clover:element>
+        <clover:element clover:name="BEGDEM_PER">$8.BEGDEM_PER</clover:element>
+        <clover:element clover:name="PR_REF_MAT">$8.PR_REF_MAT</clover:element>
+        <REFOBJTYPE>$8.REFOBJTYPE</REFOBJTYPE>
+        <REFOBJKEY>$8.REFOBJKEY</REFOBJKEY>
+        <REFLOGSYS>$8.REFLOGSYS</REFLOGSYS>
+        <clover:element clover:name="ORDER_PROB">$8.ORDER_PROB</clover:element>
+        <clover:element clover:name="MAX_PL_DLV">$8.MAX_PL_DLV</clover:element>
+        <clover:element clover:name="CFOP_CODE">$8.CFOP_CODE</clover:element>
+        <TAXLAWICMS>$8.TAXLAWICMS</TAXLAWICMS>
+        <TAXLAWIPI>$8.TAXLAWIPI</TAXLAWIPI>
+        <clover:element clover:name="SD_TAXCODE">$8.SD_TAXCODE</clover:element>
+        <clover:element clover:name="ASSORT_MOD">$8.ASSORT_MOD</clover:element>
+        <clover:element clover:name="COMP_QUANT">$8.COMP_QUANT</clover:element>
+        <clover:element clover:name="TARGET_VAL">$8.TARGET_VAL</clover:element>
+        <CURRENCY>$8.CURRENCY</CURRENCY>
+        <clover:element clover:name="CURR_ISO">$8.CURR_ISO</clover:element>
+        <clover:element clover:name="PROFIT_CTR">$8.PROFIT_CTR</clover:element>
+        <ORDERID>$8.ORDERID</ORDERID>
+        <clover:element clover:name="WBS_ELEM">$8.WBS_ELEM</clover:element>
+        <clover:element clover:name="DEPREC_PER">$8.DEPREC_PER</clover:element>
+        <clover:element clover:name="REF_DOC">$8.REF_DOC</clover:element>
+        <clover:element clover:name="REF_DOC_IT">$8.REF_DOC_IT</clover:element>
+        <clover:element clover:name="REF_DOC_CA">$8.REF_DOC_CA</clover:element>
+        <clover:element clover:name="CUST_MAT35">$8.CUST_MAT35</clover:element>
+        <clover:element clover:name="EXCH_RATE_FI_V">$8.EXCH_RATE_FI_V</clover:element>
+        <clover:element clover:name="EXCHG_RATE_V">$8.EXCHG_RATE_V</clover:element>
+        <clover:element clover:name="ITEMGUID_ATP">$8.ITEMGUID_ATP</clover:element>
+        <clover:element clover:name="VAL_CONTR">$8.VAL_CONTR</clover:element>
+        <clover:element clover:name="VAL_CON_I">$8.VAL_CON_I</clover:element>
+        <clover:element clover:name="CONFIG_ID">$8.CONFIG_ID</clover:element>
+        <clover:element clover:name="INST_ID">$8.INST_ID</clover:element>
+        <clover:element clover:name="MAT_EXT">$8.MAT_EXT</clover:element>
+        <clover:element clover:name="MAT_GUID">$8.MAT_GUID</clover:element>
+        <clover:element clover:name="MAT_VERS">$8.MAT_VERS</clover:element>
+        <clover:element clover:name="P_MAT_EXT">$8.P_MAT_EXT</clover:element>
+        <clover:element clover:name="P_MAT_GUID">$8.P_MAT_GUID</clover:element>
+        <clover:element clover:name="P_MAT_VERS">$8.P_MAT_VERS</clover:element>
+        <clover:element clover:name="FUNC_AREA">$8.FUNC_AREA</clover:element>
+        <clover:element clover:name="ALTERN_BOM">$8.ALTERN_BOM</clover:element>
+        <clover:element clover:name="FKK_CONACCT">$8.FKK_CONACCT</clover:element>
+        <clover:element clover:name="EAN_UPC">$8.EAN_UPC</clover:element>
+        <PRODCAT>$8.PRODCAT</PRODCAT>
+        <clover:element clover:name="SHIP_TYPE">$8.SHIP_TYPE</clover:element>
+        <clover:element clover:name="S_PROC_IND">$8.S_PROC_IND</clover:element>
+        <clover:element clover:name="FUNC_AREA_LONG">$8.FUNC_AREA_LONG</clover:element>
+        <clover:element clover:name="BILL_REL">$8.BILL_REL</clover:element>
+        <clover:element clover:name="VW_UEPOS">$8.VW_UEPOS</clover:element>
+        <CAMPAIGN>$8.CAMPAIGN</CAMPAIGN>
+        <DLVSCHDUSE>$8.DLVSCHDUSE</DLVSCHDUSE>
+        <clover:element clover:name="CFOP_LONG">$8.CFOP_LONG</clover:element>
+        <SELECTION>$8.SELECTION</SELECTION>
+        <clover:element clover:name="MAT_ENTRD">$8.MAT_ENTRD</clover:element>
+        <clover:element clover:name="LOG_SYSTEM_OWN">$8.LOG_SYSTEM_OWN</clover:element>
+        <clover:element clover:name="ITM_TYPE_USAGE">$8.ITM_TYPE_USAGE</clover:element>
+        <TAXLAWISS>$8.TAXLAWISS</TAXLAWISS>
+        <clover:element clover:name="MAT_ENTRD_EXTERNAL">$8.MAT_ENTRD_EXTERNAL</clover:element>
+        <clover:element clover:name="MAT_ENTRD_GUID">$8.MAT_ENTRD_GUID</clover:element>
+        <clover:element clover:name="MAT_ENTRD_VERSION">$8.MAT_ENTRD_VERSION</clover:element>
+        <clover:element clover:name="LOC_TAXCAT">$8.LOC_TAXCAT</clover:element>
+        <clover:element clover:name="LOC_ZEROVAT">$8.LOC_ZEROVAT</clover:element>
+        <clover:element clover:name="LOC_ACTCODE">$8.LOC_ACTCODE</clover:element>
+        <clover:element clover:name="LOC_DISTTYPE">$8.LOC_DISTTYPE</clover:element>
+        <clover:element clover:name="LOC_TXRELCLAS">$8.LOC_TXRELCLAS</clover:element>
+        <clover:element clover:name="CALC_MOTIVE">$8.CALC_MOTIVE</clover:element>
+        <COMPREAS>$8.COMPREAS</COMPREAS>
+        <FUND>$8.FUND</FUND>
+        <clover:element clover:name="FUNDS_CTR">$8.FUNDS_CTR</clover:element>
+        <clover:element clover:name="CMMT_ITEM">$8.CMMT_ITEM</clover:element>
+        <clover:element clover:name="GRANT_NBR">$8.GRANT_NBR</clover:element>
+        <clover:element clover:name="BUDGET_PERIOD">$8.BUDGET_PERIOD</clover:element>
+        <TAXLAWCOFINS>$8.TAXLAWCOFINS</TAXLAWCOFINS>
+        <TAXLAWPIS>$8.TAXLAWPIS</TAXLAWPIS>
+        <clover:element clover:name="TREASURY_ACC_SYMBOL">$8.TREASURY_ACC_SYMBOL</clover:element>
+        <clover:element clover:name="BUSINESS_EVENT_TCODE">$8.BUSINESS_EVENT_TCODE</clover:element>
+        <clover:element clover:name="MODIFICATION_ALLOWED">$8.MODIFICATION_ALLOWED</clover:element>
+        <clover:element clover:name="CANCELLATION_ALLOWED">$8.CANCELLATION_ALLOWED</clover:element>
+        <clover:element clover:name="PAYMENT_METHODS">$8.PAYMENT_METHODS</clover:element>
+        <clover:element clover:name="BUSINESS_PARTNER_NO">$8.BUSINESS_PARTNER_NO</clover:element>
+        <clover:element clover:name="REPORTING_FREQ">$8.REPORTING_FREQ</clover:element>
+      </row>
     </clover:element>
     <clover:element clover:name="ORDER_ITEM_INX">
       <row clover:inPort="5" clover:key="__parent_id" clover:parentKey="__id">
@@ -2055,6 +2255,15 @@
 <attr name="_data_format"><![CDATA[XML]]></attr>
 <attr name="__rootGlobalElementName"><![CDATA[BAPI_SALESORDER_CHANGE]]></attr>
 </Node>
+<Node enabled="enabled" guiName="Foreach SalesOrderInSapItem-&gt; 'ORDER_ITEM_IN/row'" guiX="460" guiY="820" id="FOREACH_ITEMS_ROW" transformClass="com.mulesoft.datamapper.transform.MelRecordTransform" type="REFORMAT">
+<attr name="melScript"><![CDATA[//MEL
+//START -> DO NOT REMOVE
+output.__id = input.__id;
+output.__parent_id = input.__parent_id;
+//END -> DO NOT REMOVE
+output.ITM_NUMBER = input.ITM_NUMBER;
+]]></attr>
+</Node>
 <Node enabled="enabled" guiName="Foreach 'Items' -&gt; 'ORDER_ITEM_INX/row'" guiX="460" guiY="920" id="FOREACH_ITEMS_ROW1" transformClass="com.mulesoft.datamapper.transform.MelRecordTransform" type="REFORMAT">
 <attr name="melScript"><![CDATA[//MEL
 //START -> DO NOT REMOVE
@@ -2153,6 +2362,7 @@ output.REQ_QTY = input.Quantity;]]></attr>
 <Edge debugMode="true" fromNode="BEAN_READER0:0" guiBendpoints="" id="Edge2" inPort="Port 0 (in)" metadata="aec83820-5271-4f5a-8cd2-005805928eb1" outPort="Port 0 (out)" toNode="SIMPLE_COPY0:0"/>
 <Edge debugMode="true" fromNode="BEAN_READER0:1" guiBendpoints="" id="Edge19" inPort="Port 0 (in)" metadata="5b6130c0-171b-431c-a210-a11745b21758" outPort="Port 1 (out)" toNode="SIMPLE_COPY1:0"/>
 <Edge debugMode="true" fromNode="BEAN_READER0:2" guiBendpoints="" id="Edge3" inPort="Port 0 (in)" metadata="fad2774c-83d5-46d1-af10-b1ad10765448" outPort="Port 2 (out)" toNode="SIMPLE_COPY2:0"/>
+<Edge debugMode="true" fromNode="FOREACH_ITEMS_ROW:0" guiBendpoints="" id="Edge6" inPort="Port 8 (in)" metadata="f1b87fe8-f0bd-4323-903c-f5bd137426f6" outPort="Port 0 (out)" toNode="EXT_XML_WRITER0:8"/>
 <Edge debugMode="true" fromNode="FOREACH_ITEMS_ROW1:0" guiBendpoints="" id="Edge21" inPort="Port 5 (in)" metadata="874ab10f-03e8-46e6-a397-ce1036c53ba9" outPort="Port 0 (out)" toNode="EXT_XML_WRITER0:5"/>
 <Edge debugMode="true" fromNode="FOREACH_OPPORTUNITY_BAPI_SALESORDER_CHANGE:0" guiBendpoints="" id="Edge1" inPort="Port 0 (in)" metadata="d24606dc-958e-4a45-ab19-74255b3a2250" outPort="Port 0 (out)" toNode="EXT_XML_WRITER0:0"/>
 <Edge debugMode="true" fromNode="FOREACH_OPPORTUNITY_ROW3:0" guiBendpoints="" id="Edge10" inPort="Port 1 (in)" metadata="0905b593-1e7f-49dc-81ec-bc688de53949" outPort="Port 0 (out)" toNode="EXT_XML_WRITER0:1"/>
@@ -2166,6 +2376,7 @@ output.REQ_QTY = input.Quantity;]]></attr>
 <Edge debugMode="true" fromNode="SIMPLE_COPY0:2" guiBendpoints="" id="Edge11" inPort="Port 0 (in)" metadata="aec83820-5271-4f5a-8cd2-005805928eb1" outPort="Port 2 (out)" toNode="FOREACH_OPPORTUNITY_ROW4:0"/>
 <Edge debugMode="true" fromNode="SIMPLE_COPY0:3" guiBendpoints="" id="Edge13" inPort="Port 0 (in)" metadata="aec83820-5271-4f5a-8cd2-005805928eb1" outPort="Port 3 (out)" toNode="FOREACH_OPPORTUNITY_ROW5:0"/>
 <Edge debugMode="true" fromNode="SIMPLE_COPY1:0" guiBendpoints="" id="Edge20" inPort="Port 0 (in)" metadata="5b6130c0-171b-431c-a210-a11745b21758" outPort="Port 0 (out)" toNode="FOREACH_ITEMS_ROW1:0"/>
+<Edge debugMode="true" fromNode="SIMPLE_COPY1:1" guiBendpoints="" id="Edge5" inPort="Port 0 (in)" metadata="5b6130c0-171b-431c-a210-a11745b21758" outPort="Port 1 (out)" toNode="FOREACH_ITEMS_ROW:0"/>
 <Edge debugMode="true" fromNode="SIMPLE_COPY2:0" guiBendpoints="" id="Edge15" inPort="Port 0 (in)" metadata="fad2774c-83d5-46d1-af10-b1ad10765448" outPort="Port 0 (out)" toNode="FOREACH_RECORDS_ROW:0"/>
 <Edge debugMode="true" fromNode="SIMPLE_COPY2:1" guiBendpoints="" id="Edge4" inPort="Port 0 (in)" metadata="fad2774c-83d5-46d1-af10-b1ad10765448" outPort="Port 1 (out)" toNode="FOREACH_RECORDS_ROW1:0"/>
 <Edge debugMode="true" fromNode="SIMPLE_COPY2:2" guiBendpoints="" id="Edge8" inPort="Port 0 (in)" metadata="fad2774c-83d5-46d1-af10-b1ad10765448" outPort="Port 2 (out)" toNode="FOREACH_RECORDS_ROW2:0"/>
