@@ -9,8 +9,8 @@
 	version="EE-3.5.2"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:json="http://www.mulesoft.org/schema/mule/json"
-	xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
@@ -126,7 +126,7 @@ payload['CustomerName'] = '${account.sapRefCustomer}';
                         <enricher target="#[payload['CustomerNumber']]" doc:name="store result in CustomerNumber">
      	                   <expression-transformer expression="#[payload['customerInSap']['CustomerNumber']]" doc:name="get new account id"/>
                         </enricher>
-                        <logger message="4444 customer number #[payload['customerInSap']['CustomerNumber']]  &lt;CUSTOMERNO&gt;#[payload['customerInSap']['CustomerNumber']]&lt;/CUSTOMERNO&gt;" level="INFO" doc:name="Logger"/>
+                        <logger message="4444 customer number #[payload['customerInSap']['CustomerNumber']] " level="INFO" doc:name="Logger"/>
                         <enricher doc:name="store Sales Area">
                             <processor-chain doc:name="Processor Chain">
                                 <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_CUSTOMER_GETSALESAREAS" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_CUSTOMER_GETSALESAREAS">
@@ -138,7 +138,7 @@ payload['CustomerName'] = '${account.sapRefCustomer}';
 
 
                                 </sap:outbound-endpoint>
-                                <logger message="aaaaa: #[payload] " level="INFO" doc:name="Logger"/>
+
                                 <data-mapper:transform config-ref="BAPI_CUSTOMER_GETSALESAREAS_to_Sales_Areas" doc:name="BAPI_CUSTOMER_GETSALESAREAS to Sales Areas"/>
                             </processor-chain>
                             <enrich source="#[payload[0]['SalesOrganization']]" target="#[payload['SalesOrganization']]"/>
