@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
@@ -15,34 +15,36 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
     </flow>
     <flow name="retrieveSalesOrderFromSapFlow" doc:name="retrieveSalesOrderFromSapFlow">
         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_SALESORDER_GETLIST">
-            <sap:definition><![CDATA[<jco>
+            <sap:definition><![CDATA[<BAPI_SALESORDER_GETLIST>
 	<import>
-		<field name="PURCHASE_ORDER_NUMBER">#[payload['Id']]</field>
+		<PURCHASE_ORDER_NUMBER>#[payload['Id']]</PURCHASE_ORDER_NUMBER>
 	</import>
-</jco>]]></sap:definition>
+</BAPI_SALESORDER_GETLIST>]]></sap:definition>
+
         </sap:outbound-endpoint>
         <data-mapper:transform config-ref="BAPI_SALESORDER_GETLIST_to_Sales_Order" doc:name="BAPI_SALESORDER_GETLIST to Sales Order"/>
         <choice doc:name="Choice">
             <when expression="#[!(payload is NullPayload)]">
                 <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_ISAORDER_GETDETAILEDLIST" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="SAP BAPI_ISAORDER_GETDETAILEDLIST">
-                    <sap:definition><![CDATA[<jco>
+                    <sap:definition><![CDATA[<BAPI_ISAORDER_GETDETAILEDLIST>
 	<import>
-		<structure name="I_BAPI_VIEW">
-			<field name="ITEM">X</field>
-			<field name="SDCOND">X</field>
-			<field name="STATUS_H">X</field>
-			<field name="TEXT">X</field>
-			<field name="PARTNER">X</field>
-		</structure>
+		<I_BAPI_VIEW>
+			<ITEM>X</ITEM>
+			<SDCOND>X</SDCOND>
+			<STATUS_H>X</STATUS_H>
+			<TEXT>X</TEXT>
+			<PARTNER>X</PARTNER>
+		</I_BAPI_VIEW>
 	</import>
 	<tables>
-		<table name="SALES_DOCUMENTS">
+		<SALES_DOCUMENTS>
 			<row>
-				<field name="VBELN">#[payload['Id']]</field>
+				<VBELN>#[payload['Id']]</VBELN>
 			</row>
-		</table>
+		</SALES_DOCUMENTS>
 	</tables>
-</jco>]]></sap:definition>
+</BAPI_ISAORDER_GETDETAILEDLIST>]]></sap:definition>
+
                 </sap:outbound-endpoint>
                 <byte-array-to-string-transformer doc:name="Byte Array to String"/>
                 <data-mapper:transform config-ref="BAPI_ISAORDER_GETDETAILEDLIST_to_Sales_Order" doc:name="BAPI_ISAORDER_GETDETAILEDLIST to Sales Order"/>
@@ -91,14 +93,15 @@ payload = iter.hasNext() ? iter.next() : NullPayload.getInstance();
         <foreach doc:name="For Each">
             <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_CHANGE" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" bapiTransaction="true" responseTimeout="10000" doc:name="Delete Sales Order from SAP">
                 <sap:transaction action="NONE"/>
-                <sap:definition><![CDATA[<jco>
+                <sap:definition><![CDATA[<BAPI_SALESORDER_CHANGE>
 	<import>
-		<field name="SALESDOCUMENT">#[payload]</field>
-		<structure name="ORDER_HEADER_INX">
-			<field name="UPDATEFLAG">D</field>
-		</structure>
+		<SALESDOCUMENT>#[payload]</SALESDOCUMENT>
+		<ORDER_HEADER_INX>
+			<UPDATEFLAG>D</UPDATEFLAG>
+		</ORDER_HEADER_INX>
 	</import>
-</jco>]]></sap:definition>
+</BAPI_SALESORDER_CHANGE>]]></sap:definition>
+
             </sap:outbound-endpoint>
             <logger message="Remove Opportunities from SAP result: #[payload]" level="INFO" doc:name="Logger"/>
         </foreach>
@@ -114,22 +117,23 @@ payload = iter.hasNext() ? iter.next() : NullPayload.getInstance();
                 <enricher source="#[payload[0]['CustomerNumber'] == null ? NullPayload.getInstance() : payload[0]]" target="#[payload]" doc:name="store result in customerInSap">
                     <processor-chain doc:name="Processor Chain">
                         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_CUSTOMER_FIND" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Get Customer by Name">
-                    <sap:definition><![CDATA[<jco>
+                    <sap:definition><![CDATA[<BAPI_CUSTOMER_FIND>
 	<import>
-		<field name="MAX_CNT">0</field>
-		<field name="PL_HOLD">X</field>
+		<MAX_CNT>0</MAX_CNT>
+		<PL_HOLD>X</PL_HOLD>
 	</import>
   	<tables>
-		<table name="SELOPT_TAB">
+		<SELOPT_TAB>
 			<row id="0">
-				<field name="TABNAME">KNA1</field>
-				<field name="FIELDNAME">NAME1</field>
-				<field name="FIELDVALUE">#[payload['Name']]</field>
+				<TABNAME>KNA1</TABNAME>
+				<FIELDNAME>NAME1</FIELDNAME>
+				<FIELDVALUE>#[payload['Name']]</FIELDVALUE>
 			</row>
-		</table>
+		</SELOPT_TAB>
 	</tables>
-</jco>
+</BAPI_CUSTOMER_FIND>
 ]]></sap:definition>
+
                         </sap:outbound-endpoint>
                         <data-mapper:transform config-ref="BAPI_CUSTOMER_FIND_to_Customer" doc:name="BAPI_CUSTOMER_FIND to Customer"/>
                     </processor-chain>
@@ -145,12 +149,13 @@ payload = iter.hasNext() ? iter.next() : NullPayload.getInstance();
     <flow name="deleteAccountFromSapFlow" doc:name="deleteAccountFromSapFlow">
         <foreach doc:name="For Each">
             <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="ZMULE_CUSTOMER_DELETE" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Delete Customer from SAP">
-                <sap:definition><![CDATA[<jco>
+                <sap:definition><![CDATA[<ZMULE_CUSTOMER_DELETE>
 	<import>
-		<field name="I_CUSTOMER">#[payload]</field>
+		<I_CUSTOMER>#[payload]</I_CUSTOMER>
 	</import>
-</jco>
+</ZMULE_CUSTOMER_DELETE>
 ]]></sap:definition>
+
             </sap:outbound-endpoint>
             <logger message="Remove Accounts from SAP result: #[payload]" level="INFO" doc:name="Logger"/>
         </foreach>

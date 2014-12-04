@@ -5,7 +5,7 @@ xmlns="http://www.mulesoft.org/schema/mule/core"
 xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
 xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
 xmlns:spring="http://www.springframework.org/schema/beans" 
-version="EE-3.5.1" 
+version="EE-3.5.2" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
@@ -23,7 +23,7 @@ Here you should:
 Here you should not: 
 	* Run validations against external systems
 	* Choose flow of you application based on input parameters">
-        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" doc:name="HTTP" path="migratematerial"/>
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" doc:name="HTTP" path="migrateopportunity"/>
         <sfdc:query config-ref="Salesforce" query="SELECT Id, LastModifiedDate, Name, Amount, StageName, Probability, CloseDate, Type, Description, ForecastCategory, (SELECT ListPrice, Description,  Quantity, TotalPrice, UnitPrice, PricebookEntry.Product2.sap_external_id__c FROM Opportunity.OpportunityLineItems ORDER BY SortOrder), Account.Id, Account.Name, Account.AccountNumber, Account.AccountSource, Account.AnnualRevenue, Account.BillingCity, Account.BillingCountry, Account.BillingPostalCode, Account.BillingState, Account.BillingStreet, Account.Description, Account.Fax, Account.Industry, Account.NumberOfEmployees, Account.Ownership, Account.ParentId, Account.Phone, Account.Rating, Account.ShippingCity, Account.ShippingCountry, Account.ShippingPostalCode, Account.ShippingState, Account.ShippingStreet, Account.Sic, Account.SicDesc, Account.Site, Account.TickerSymbol, Account.Type, Account.Website FROM Opportunity WHERE IsWon = true" doc:name="query Opportunities with filtering criteria from Salesforce"/>
         <logger message="1111111 #[payload.size()]" level="INFO" doc:name="Logger"/>
 

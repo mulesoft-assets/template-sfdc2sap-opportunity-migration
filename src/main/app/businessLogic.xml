@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+<mule xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp"
+	xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
 	xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" 
 	xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" 
-	version="EE-3.5.1"
+	version="EE-3.5.2"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:json="http://www.mulesoft.org/schema/mule/json"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
@@ -33,36 +35,40 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
                 <enricher source="#[payload is NullPayload ? null : payload['Id']]" target="#[payload['SALESDOCUMENT']]" doc:name="Message Enricher">
                     <processor-chain doc:name="Processor Chain">
                         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_SALESORDER_GETLIST">
-                            <sap:definition><![CDATA[<jco>
+                            <sap:definition><![CDATA[<BAPI_SALESORDER_GETLIST>
 	<import>
-		<field name="PURCHASE_ORDER_NUMBER">#[payload['Id']]</field>
+		<PURCHASE_ORDER_NUMBER>#[payload['Id']]</PURCHASE_ORDER_NUMBER>
 	</import>
-</jco>]]></sap:definition>
+</BAPI_SALESORDER_GETLIST>	
+]]></sap:definition>
+
 
                         </sap:outbound-endpoint>
                         <data-mapper:transform config-ref="BAPI_SALESORDER_GETLIST_to_Sales_Order" doc:name="BAPI_SALESORDER_GETLIST to Sales Order"/>
                     </processor-chain>
                 </enricher>
+
                 <choice doc:name="Choice">
                     <when expression="#[payload['SALESDOCUMENT'] != null]">
                         <enricher source="#[payload]" target="#[payload['salesOrderInSap']]" doc:name="store result in record var 'salesorderInSap'">
                             <processor-chain doc:name="Processor Chain">
                                 <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_ISAORDER_GETDETAILEDLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="SAP BAPI_ISAORDER_GETDETAILEDLIST" evaluateFunctionResponse="true">
-                                    <sap:definition><![CDATA[<jco>
+                                    <sap:definition><![CDATA[<BAPI_ISAORDER_GETDETAILEDLIST>
 	<import>
-		<structure name="I_BAPI_VIEW">
-			<field name="ITEM">X</field>
-			<field name="SDCOND">X</field>
-		</structure>
+		<I_BAPI_VIEW>
+			<ITEM>X</ITEM>
+			<SDCOND>X</SDCOND>
+		</I_BAPI_VIEW>
 	</import>
 	<tables>
-		<table name="SALES_DOCUMENTS">
+		<SALES_DOCUMENTS>
 			<row>
-				<field name="VBELN">#[payload['SALESDOCUMENT']]</field>
+				<VBELN>#[payload['SALESDOCUMENT']]</VBELN>
 			</row>
-		</table>
+		</SALES_DOCUMENTS>
 	</tables>
-</jco>]]></sap:definition>
+</BAPI_ISAORDER_GETDETAILEDLIST>	]]></sap:definition>
+
 
                                 </sap:outbound-endpoint>
                                 <data-mapper:transform config-ref="BAPI_ISAORDER_GETDETAILEDLIST_to_Sales_Order" doc:name="BAPI_ISAORDER_GETDETAILEDLIST to Sales Order"/>
@@ -79,22 +85,22 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
                 <enricher source="#[payload[0]['CustomerNumber'] == null ? NullPayload.getInstance() : payload[0]]" target="#[payload['customerInSap']]" doc:name="store result in customerInSap">
                     <processor-chain doc:name="Processor Chain">
                         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_CUSTOMER_FIND" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Get Customer by Name">
-                            <sap:definition><![CDATA[<jco>
+                            <sap:definition><![CDATA[<BAPI_CUSTOMER_FIND>
 	<import>
-		<field name="MAX_CNT">0</field>
-		<field name="PL_HOLD">X</field>
+		<MAX_CNT>0</MAX_CNT>
+		<PL_HOLD>X</PL_HOLD>
 	</import>
   	<tables>
-		<table name="SELOPT_TAB">
+		<SELOPT_TAB>
 			<row id="0">
-				<field name="TABNAME">KNA1</field>
-				<field name="FIELDNAME">NAME1</field>
-				<field name="FIELDVALUE">#[org.apache.commons.lang3.StringEscapeUtils.escapeXml(payload['Account']['Name'])]</field>
+				<TABNAME>KNA1</TABNAME>
+				<FIELDNAME>NAME1</FIELDNAME>
+				<FIELDVALUE>#[org.apache.commons.lang3.StringEscapeUtils.escapeXml(payload['Account']['Name'])]</FIELDVALUE>
 			</row>
-		</table>
+		</SELOPT_TAB>
 	</tables>
-</jco>
-]]></sap:definition>
+</BAPI_CUSTOMER_FIND>]]></sap:definition>
+
 
                         </sap:outbound-endpoint>
                         <data-mapper:transform config-ref="BAPI_CUSTOMER_FIND_to_Customer" doc:name="BAPI_CUSTOMER_FIND to Customer"/>
@@ -120,17 +126,19 @@ payload['CustomerName'] = '${account.sapRefCustomer}';
                         <enricher target="#[payload['CustomerNumber']]" doc:name="store result in CustomerNumber">
      	                   <expression-transformer expression="#[payload['customerInSap']['CustomerNumber']]" doc:name="get new account id"/>
                         </enricher>
-                        <logger message="4444 customer number #[payload['CustomerNumber']]  #[payload['customerInSap']['CustomerNumber']]" level="INFO" doc:name="Logger"/>
+                        <logger message="4444 customer number #[payload['customerInSap']['CustomerNumber']]  &lt;CUSTOMERNO&gt;#[payload['customerInSap']['CustomerNumber']]&lt;/CUSTOMERNO&gt;" level="INFO" doc:name="Logger"/>
                         <enricher doc:name="store Sales Area">
                             <processor-chain doc:name="Processor Chain">
                                 <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_CUSTOMER_GETSALESAREAS" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_CUSTOMER_GETSALESAREAS">
-                                    <sap:definition><![CDATA[<jco>
+                                    <sap:definition><![CDATA[<BAPI_CUSTOMER_GETSALESAREAS>
 	<import>
-		<field name="CUSTOMERNO">#[payload['customerInSap']['CustomerNumber']]</field>
+		<CUSTOMERNO>#[payload['customerInSap']['CustomerNumber']]</CUSTOMERNO>
 	</import>
-</jco>]]></sap:definition>
+</BAPI_CUSTOMER_GETSALESAREAS>	]]></sap:definition>
+
 
                                 </sap:outbound-endpoint>
+                                <logger message="aaaaa: #[payload] " level="INFO" doc:name="Logger"/>
                                 <data-mapper:transform config-ref="BAPI_CUSTOMER_GETSALESAREAS_to_Sales_Areas" doc:name="BAPI_CUSTOMER_GETSALESAREAS to Sales Areas"/>
                             </processor-chain>
                             <enrich source="#[payload[0]['SalesOrganization']]" target="#[payload['SalesOrganization']]"/>
@@ -186,10 +194,16 @@ if (payload['OpportunityLineItems'] != null) {
             </batch:step>
 		</batch:process-records>
 		<batch:on-complete>
-			<json:object-to-json-transformer
-				doc:name="transform BatchJobInstance to JSON" />
-			<logger level="INFO" doc:name="log 'Migration process has finished'"
-				message="Migration process has finished: #[payload]" />
+			<scatter-gather doc:name="All">
+                <processor-chain>
+                    <json:object-to-json-transformer doc:name="transform BatchJobInstance to JSON"/>
+                    <logger message="Migration process has finished: #[payload]" level="INFO" doc:name="log migration process has finished"/>
+                </processor-chain>
+                <processor-chain>
+                    <json:object-to-json-transformer doc:name="transform BatchJobInstance to JSON"/>
+                    <smtp:outbound-endpoint host="${smtp.host}" port="${smtp.port}" user="${smtp.user}" password="${smtp.password}" to="${mail.to}" from="${mail.from}" subject="${mail.subject}" responseTimeout="10000" connector-ref="Gmail" doc:name="send result of the batch in mail"/>
+                </processor-chain>
+            </scatter-gather>
 		</batch:on-complete>
 	</batch:job>
 
