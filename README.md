@@ -115,7 +115,6 @@ column='486'
 # Run it! <a name="runit"/>
 Simple steps to get SFDC2SAP-opportunity-migration running.
 In any of the ways you would like to run this Template this is an example of the output you'll see after hitting the HTTP endpoint:
-
 <pre>
 <h1>Batch Process initiated</h1>
 <b>ID:</b>6eea3cc6-7c96-11e3-9a65-55f9f3ae584e<br/>
