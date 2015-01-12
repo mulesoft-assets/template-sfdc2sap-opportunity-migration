@@ -31,7 +31,7 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
 		<batch:threading-profile poolExhaustedAction="WAIT" />
 		<batch:process-records>
 			<batch:step name="foreachOpportunityInSalesforceGetSalesOrderInSapStep">
-                <logger message="22222 sf opp  #[payload]" level="INFO" doc:name="Logger"/>
+
                 <enricher source="#[payload is NullPayload ? null : payload['Id']]" target="#[payload['SALESDOCUMENT']]" doc:name="Message Enricher">
                     <processor-chain doc:name="Processor Chain">
                         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_SALESORDER_GETLIST">
@@ -41,6 +41,7 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
 	</import>
 </BAPI_SALESORDER_GETLIST>	
 ]]></sap:definition>
+
 
 
                         </sap:outbound-endpoint>
@@ -70,18 +71,19 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
 </BAPI_ISAORDER_GETDETAILEDLIST>	]]></sap:definition>
 
 
+
                                 </sap:outbound-endpoint>
                                 <data-mapper:transform config-ref="BAPI_ISAORDER_GETDETAILEDLIST_to_Sales_Order" doc:name="BAPI_ISAORDER_GETDETAILEDLIST to Sales Order"/>
                             </processor-chain>
                         </enricher>
                     </when>
                     <otherwise>
-                        <expression-component doc:name="Expression"><![CDATA[payload['salesOrderInSap'] = NullPayload.getInstance();]]></expression-component>
+                        <expression-component doc:name="set NullPayload to salesorderInSap"><![CDATA[payload['salesOrderInSap'] = NullPayload.getInstance();]]></expression-component>
                     </otherwise>
                 </choice>
 			</batch:step>
 			 <batch:step name="findOrCreateCustomerInSapSetp" accept-expression="'syncAccount' == '${account.sync.policy}'">
-                <logger message="33333 create customer in SAP" level="INFO" doc:name="Logger"/>
+
                 <enricher source="#[payload[0]['CustomerNumber'] == null ? NullPayload.getInstance() : payload[0]]" target="#[payload['customerInSap']]" doc:name="store result in customerInSap">
                     <processor-chain doc:name="Processor Chain">
                         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_CUSTOMER_FIND" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Get Customer by Name">
@@ -100,6 +102,7 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
 		</SELOPT_TAB>
 	</tables>
 </BAPI_CUSTOMER_FIND>]]></sap:definition>
+
 
 
                         </sap:outbound-endpoint>
@@ -126,7 +129,7 @@ payload['CustomerName'] = '${account.sapRefCustomer}';
                         <enricher target="#[payload['CustomerNumber']]" doc:name="store result in CustomerNumber">
      	                   <expression-transformer expression="#[payload['customerInSap']['CustomerNumber']]" doc:name="get new account id"/>
                         </enricher>
-                        <logger message="4444 customer number #[payload['customerInSap']['CustomerNumber']] " level="INFO" doc:name="Logger"/>
+
                         <enricher doc:name="store Sales Area">
                             <processor-chain doc:name="Processor Chain">
                                 <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_CUSTOMER_GETSALESAREAS" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_CUSTOMER_GETSALESAREAS">
@@ -135,6 +138,7 @@ payload['CustomerName'] = '${account.sapRefCustomer}';
 		<CUSTOMERNO>#[payload['customerInSap']['CustomerNumber']]</CUSTOMERNO>
 	</import>
 </BAPI_CUSTOMER_GETSALESAREAS>	]]></sap:definition>
+
 
 
                                 </sap:outbound-endpoint>
@@ -187,7 +191,7 @@ if (payload['OpportunityLineItems'] != null) {
 
                 <data-mapper:transform config-ref="Opportunity_to_BAPI_SALESORDER_CHANGE" doc:name="Opportunity to BAPI_SALESORDER_CHANGE"/>
                 <byte-array-to-string-transformer doc:name="Byte Array to String"/>
-                <logger message="666666666 Opportunities to update: #[payload]" level="INFO" doc:name="Log Opportunities to update"/>
+
                 <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_CHANGE" xmlVersion="2" outputXml="true" bapiTransaction="true" responseTimeout="10000" doc:name="BAPI_SALESORDER_CHANGE" evaluateFunctionResponse="true"/>
                 <byte-array-to-string-transformer doc:name="Byte Array to String"/>
                 <logger message="Update result: #[payload]" level="INFO" doc:name="log Result"/>

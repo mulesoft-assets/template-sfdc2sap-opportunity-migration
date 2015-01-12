@@ -25,10 +25,10 @@ Here you should not:
 	* Choose flow of you application based on input parameters">
         <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" doc:name="HTTP" path="migrateopportunity"/>
         <sfdc:query config-ref="Salesforce" query="SELECT Id, LastModifiedDate, Name, Amount, StageName, Probability, CloseDate, Type, Description, ForecastCategory, (SELECT ListPrice, Description,  Quantity, TotalPrice, UnitPrice, PricebookEntry.Product2.sap_external_id__c FROM Opportunity.OpportunityLineItems ORDER BY SortOrder), Account.Id, Account.Name, Account.AccountNumber, Account.AccountSource, Account.AnnualRevenue, Account.BillingCity, Account.BillingCountry, Account.BillingPostalCode, Account.BillingState, Account.BillingStreet, Account.Description, Account.Fax, Account.Industry, Account.NumberOfEmployees, Account.Ownership, Account.ParentId, Account.Phone, Account.Rating, Account.ShippingCity, Account.ShippingCountry, Account.ShippingPostalCode, Account.ShippingState, Account.ShippingStreet, Account.Sic, Account.SicDesc, Account.Site, Account.TickerSymbol, Account.Type, Account.Website FROM Opportunity WHERE IsWon = true" doc:name="query Opportunities with filtering criteria from Salesforce"/>
-        <logger message="1111111 #[payload.size()]" level="INFO" doc:name="Logger"/>
+
 
         <batch:execute name="syncOpportunitiesBatch" doc:name="trigger syncOpportunitiesBatch"/>
-        <set-payload value="&lt;h1&gt;Batch Process initiated&lt;/h1&gt;&lt;b&gt;ID:&lt;/b&gt;#[payload.getId()]&lt;br/&gt;&lt;b&gt;Records to Be Processed: &lt;/b&gt;#[payload.getRecordCount()]&lt;br/&gt; &lt;b&gt;Start execution on: &lt;/b&gt;#[new java.util.Date()]" doc:name="Set Payload"/>
+        <set-payload value="&lt;h1&gt;Batch Process initiated&lt;/h1&gt;&lt;b&gt;ID:&lt;/b&gt;#[payload.getId()]&lt;br/&gt;&lt;b&gt;Records to Be Processed: &lt;/b&gt;#[payload.getRecordCount()]&lt;br/&gt; &lt;b&gt;Start execution on: &lt;/b&gt;#[new java.util.Date()]" doc:name="set response Payload"/>
         <http:response-builder status="200" contentType="text/html" doc:name="HTTP Response Builder"/>
     </flow>
     

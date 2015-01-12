@@ -22,11 +22,6 @@ import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.construct.Flow;
-import org.mule.context.notification.NotificationException;
-import org.mule.tck.probe.PollingProber;
-import org.mule.tck.probe.Prober;
-import org.mule.templates.test.utils.ListenerProbe;
-import org.mule.templates.test.utils.PipelineSynchronizeListener;
 
 import com.mulesoft.module.batch.BatchTestHelper;
 import com.sforce.soap.partner.SaveResult;

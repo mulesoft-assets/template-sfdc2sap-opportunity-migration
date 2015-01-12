@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.mule.templates</groupId>
 		<artifactId>templates-tooling-parent-pom</artifactId>
-		<version>1.0.8</version>
+		<version>1.0.13</version>
 	</parent>
 
 	<artifactId>template-sfdc2sap-opportunity-migration</artifactId>
@@ -177,11 +177,6 @@
 			<layout>default</layout>
 		</repository>
 		<repository>
-			<id>mule-ee-dependencies</id>
-			<name>Mule EE Dependencies</name>
-			<url>http://repository-master.mulesoft.org/nexus/content/repositories/mule-ee-dependencies/</url>
-		</repository>
-		<repository>
 			<id>mule-ee-thirdparty</id>
 			<name>MuleSoft Thirdparty Repository</name>
 			<url>https://repository.mulesoft.org/nexus/content/repositories/thirdparty/</url>
@@ -190,8 +185,8 @@
 	</repositories>
 
 	<scm>
-		<connection>scm:git:https://github.com/mulesoft/template-sfdc2sap-opportunity-broadcast.git</connection>
-		<developerConnection>scm:git:https://github.com/mulesoft/template-sfdc2sap-opportunity-broadcast.git</developerConnection>
-		<url>http://github.com/mulesoft/template-sfdc2sap-opportunity-broadcast</url>
+		<connection>scm:git:https://github.com/mulesoft/template-sfdc2sap-opportunity-migration.git</connection>
+		<developerConnection>scm:git:https://github.com/mulesoft/template-sfdc2sap-opportunity-migration.git</developerConnection>
+		<url>http://github.com/mulesoft/template-sfdc2sap-opportunity-migration</url>
 	</scm>
 </project>
