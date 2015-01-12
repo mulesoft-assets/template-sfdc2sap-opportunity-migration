@@ -36,7 +36,7 @@ import com.sforce.soap.partner.SaveResult;
  */
 public class BusinessLogicTestCreateAccountIT extends AbstractTemplateTestCase {
 
-	private static final String POLL_FLOW_NAME = "triggerFlow";
+	private static final String FLOW_NAME = "triggerFlow";
 	private BatchTestHelper helper;
 	private List<Map<String, Object>> createdOpportunities = new ArrayList<Map<String, Object>>();
 	private List<Map<String, Object>> createdAccounts = new ArrayList<Map<String, Object>>();
@@ -83,8 +83,8 @@ public class BusinessLogicTestCreateAccountIT extends AbstractTemplateTestCase {
 	@Test
 	public void testMainFlow() throws Exception {
 
-		// Run poll and wait for it to run
-		runFlow(POLL_FLOW_NAME);
+		// Run flow and wait for it to run
+		runFlow(FLOW_NAME);
 
 		// Wait for the batch job executed by the poll flow to finish
 		helper.awaitJobTermination(TIMEOUT_SEC * 1000, 500);
@@ -110,7 +110,7 @@ public class BusinessLogicTestCreateAccountIT extends AbstractTemplateTestCase {
 		Flow flow = lookupFlowConstruct("createAccountInSalesforceFlow");
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("Name", "sfdc2sap_opp_bc_" + Long.toString(System.currentTimeMillis(), Character.MAX_RADIX));
+		map.put("Name", "sfdc2sap_opp_mg_" + Long.toString(System.currentTimeMillis(), Character.MAX_RADIX));
 		map.put("BillingCity", "San Francisco");
 		map.put("BillingCountry", "USA");
 		map.put("Phone", "123456789");
