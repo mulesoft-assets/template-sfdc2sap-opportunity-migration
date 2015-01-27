@@ -1,5 +1,5 @@
 
-# Anypoint Template: SFDC2SAP-opportunity-migration
+# Anypoint Template: Salesforce to SAP Opportunity Migration
 
 + [License Agreement](#licenseagreement)
 + [Use Case](#usecase)
@@ -113,7 +113,7 @@ column='486'
 
 
 # Run it! <a name="runit"/>
-Simple steps to get SFDC2SAP-opportunity-migration running.
+Simple steps to get Salesforce to SAP Opportunity Migration running.
 
 
 ## Running on premise <a name="runonopremise"/>
@@ -194,7 +194,6 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + sap.jco.sysnr `14`
 + sap.jco.client `800`
 + sap.jco.lang `EN`
-+ sap.default.accountGroup `ZAG2`
 
 **SMPT Services configuration**
 

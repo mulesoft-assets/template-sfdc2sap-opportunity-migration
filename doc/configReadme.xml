@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <configuration>
 	<placeholders>
-		<placeholder id="template_name">SFDC2SAP-opportunity-migration</placeholder>
+		<placeholder id="template_name">Salesforce to SAP Opportunity Migration</placeholder>
 	</placeholders>
 	<sections>
 		<section id="use_case">
@@ -79,7 +79,6 @@ These dependencies are private for Mulesoft and will cause you application not t
 + sap.jco.sysnr `14`
 + sap.jco.client `800`
 + sap.jco.lang `EN`
-+ sap.default.accountGroup `ZAG2`
 
 **SMPT Services configuration**
 
