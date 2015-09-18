@@ -1,38 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp"
-	xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
-	xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" 
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
 	xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" 
-	version="EE-3.6.0"
+	version="EE-3.7.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:json="http://www.mulesoft.org/schema/mule/json"
 	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
-http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd
-http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
-http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd">
-    <data-mapper:config name="Opportunity_to_BAPI_SALESORDER_CREATEFROMDAT2" transformationGraphPath="opportunity_to_bapi_salesorder_createfromdat2.grf" doc:name="Opportunity_to_BAPI_SALESORDER_CREATEFROMDAT2"/>
-    <data-mapper:config name="BAPI_SALESORDER_GETLIST_to_Sales_Order" transformationGraphPath="bapi_salesorder_getlist_to_sales_order.grf" doc:name="BAPI_SALESORDER_GETLIST_to_Sales_Order"/>
-    <data-mapper:config name="Opportunity_to_BAPI_SALESORDER_CHANGE" transformationGraphPath="opportunity_to_bapi_salesorder_change.grf" doc:name="Opportunity_to_BAPI_SALESORDER_CHANGE"/>
-    <data-mapper:config name="BAPI_CUSTOMER_FIND_to_Customer" transformationGraphPath="bapi_customer_find_to_customer.grf" doc:name="BAPI_CUSTOMER_FIND_to_Customer"/>
-    <data-mapper:config name="BAPI_ISAORDER_GETDETAILEDLIST_to_Sales_Order" transformationGraphPath="bapi_isaorder_getdetailedlist_to_sales_order.grf" doc:name="BAPI_ISAORDER_GETDETAILEDLIST_to_Sales_Order"/>
-    <data-mapper:config name="Account_to_BAPI_CUSTOMER_CREATEFROMDATA1" transformationGraphPath="account_to_bapi_customer_createfromdata1.grf" doc:name="Account_to_BAPI_CUSTOMER_CREATEFROMDATA1"/>
-    <data-mapper:config name="BAPI_CUSTOMER_CREATEFROMDATA1_to_Customer_Number_Wrapper" transformationGraphPath="bapi_customer_createfromdata1_to_customer_number_wrapper.grf" doc:name="BAPI_CUSTOMER_CREATEFROMDATA1_to_Customer_Number_Wrapper"/>
-    <data-mapper:config name="BAPI_CUSTOMER_GETSALESAREAS_to_Sales_Areas" transformationGraphPath="bapi_customer_getsalesareas_to_sales_areas.grf" doc:name="BAPI_CUSTOMER_GETSALESAREAS_to_Sales_Areas"/>
-	<batch:job name="syncOpportunitiesBatch">
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+    <batch:job name="syncOpportunitiesBatch">
 		<batch:threading-profile poolExhaustedAction="WAIT" />
 		<batch:process-records>
 			<batch:step name="foreachOpportunityInSalesforceGetSalesOrderInSapStep">
 
-                <enricher source="#[payload is NullPayload ? null : payload['Id']]" target="#[payload['SALESDOCUMENT']]" doc:name="Message Enricher">
+                <enricher source="#[payload['Id']]" target="#[payload['SALESDOCUMENT']]" doc:name="store 'SALESDOCUMENT' in the payload">
                     <processor-chain doc:name="Processor Chain">
                         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_SALESORDER_GETLIST">
                             <sap:definition><![CDATA[<BAPI_SALESORDER_GETLIST>
@@ -41,15 +30,19 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
 	</import>
 </BAPI_SALESORDER_GETLIST>	
 ]]></sap:definition>
-
-
-
-
                         </sap:outbound-endpoint>
-                        <data-mapper:transform config-ref="BAPI_SALESORDER_GETLIST_to_Sales_Order" doc:name="BAPI_SALESORDER_GETLIST to Sales Order"/>
+<dw:transform-message doc:name="Transform BAPI_SALESORDER_GETLIST to Sales Order Id">
+                            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+using (so = payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].SD_DOC when payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS" != "" otherwise null)
+{
+	Id: so
+}]]></dw:set-payload>
+                        </dw:transform-message>
+
                     </processor-chain>
                 </enricher>
-
                 <choice doc:name="Choice">
                     <when expression="#[payload['SALESDOCUMENT'] != null]">
                         <enricher source="#[payload]" target="#[payload['salesOrderInSap']]" doc:name="store result in record var 'salesorderInSap'">
@@ -70,37 +63,75 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
 		</SALES_DOCUMENTS>
 	</tables>
 </BAPI_ISAORDER_GETDETAILEDLIST>	]]></sap:definition>
-
-
-
-
                                 </sap:outbound-endpoint>
-                                <data-mapper:transform config-ref="BAPI_ISAORDER_GETDETAILEDLIST_to_Sales_Order" doc:name="BAPI_ISAORDER_GETDETAILEDLIST to Sales Order"/>
+
+                                <dw:transform-message doc:name="Transform BAPI_ISAORDER_GETDETAILEDLIST to Sales Order">
+                                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	(Conditions: payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_CONDITIONS_OUT".*row map {
+		ITM_NUMBER : $.ITM_NUMBER,
+		Id : $.SD_DOC
+	})  when (payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_CONDITIONS_OUT" != ""),
+	
+	(Items: payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_ITEMS_OUT".*row map {
+		ITM_NUMBER : $.ITM_NUMBER,
+		Id : $.DOC_NUMBER
+	})  when (payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_ITEMS_OUT" != ""),
+	
+	(Partners: payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_PARTNERS_OUT".*row map {
+		Id : $.SD_DOC,
+		customerId : $.CUSTOMER
+	})  when (payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_PARTNERS_OUT" != ""),
+	
+	(StatusHeaders: payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_STATUSHEADERS_OUT".*row map {
+		Id : $.SD_DOC,
+		Status : $.ISA_DOC_STATUS
+	})  when (payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_STATUSHEADERS_OUT" != ""),
+	
+	(TextHeaders: payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_TEXTHEADERS_OUT".*row map {
+		TextName : $.TEXT_NAME,
+		Id : $.SD_DOC
+	})  when (payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_TEXTHEADERS_OUT" != ""),
+	
+	(TextLines: payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_TEXTLINES_OUT".*row map {
+		Line : $.LINE,
+		TextName : $.TEXT_NAME
+	})  when (payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_TEXTLINES_OUT" != "")
+}]]></dw:set-payload>
+                                </dw:transform-message>
                             </processor-chain>
                         </enricher>
                     </when>
                     <otherwise>
-                        <expression-component doc:name="set NullPayload to salesorderInSap"><![CDATA[payload['salesOrderInSap'] = NullPayload.getInstance();]]></expression-component>
+                        <logger message="The Opportunity does not exist in SAP, new one will be created." level="INFO" doc:name="Log 'The Opportunity does not exist in SAP'"/>
+
                     </otherwise>
                 </choice>
 			</batch:step>
 			 <batch:step name="findOrCreateCustomerInSapSetp" accept-expression="'syncAccount' == '${account.sync.policy}'">
 
-                <enricher source="#[payload[0]['CustomerNumber'] == null ? NullPayload.getInstance() : payload[0]]" target="#[payload['customerInSap']]" doc:name="store result in customerInSap">
+                <enricher source="#[payload[0]['CustomerNumber'] == null ? null : payload[0]['CustomerNumber']]" target="#[payload['CustomerNumber']]" doc:name="store 'CustomerNumber' in the payload">
                     <processor-chain doc:name="Processor Chain">
                         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_CUSTOMER_FIND" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Get Customer by Name">
-                            <sap:definition><![CDATA[<BAPI_CUSTOMER_FIND>
+                            <sap:definition><![CDATA[<BAPI_CUSTOMER_FIND type="function">
 	<import>
-		<MAX_CNT>0</MAX_CNT>
-		<PL_HOLD>X</PL_HOLD>
+		<MAX_CNT type="field" sapType="INT">0</MAX_CNT>
+		<PL_HOLD type="field" sapType="CHAR" sapLength="1">X</PL_HOLD>
 	</import>
   	<tables>
-		<SELOPT_TAB>
+  	<SELOPT_TAB type="table">
+		<table name="SELOPT_TAB">
 			<row id="0">
-				<TABNAME>KNA1</TABNAME>
-				<FIELDNAME>NAME1</FIELDNAME>
-				<FIELDVALUE>#[org.apache.commons.lang3.StringEscapeUtils.escapeXml(payload['Account']['Name'])]</FIELDVALUE>
+				<TABNAME type="field"
+					sapType="CHAR" sapLength="4">KNA1</TABNAME>
+				<FIELDNAME type="field"
+					sapType="CHAR" sapLength="5">NAME1</FIELDNAME>
+				<FIELDVALUE type="field" 
+					sapType="CHAR" sapLength="20">#[org.apache.commons.lang3.StringEscapeUtils.escapeXml(payload['Account']['Name'].length() > 20 ? payload['Account']['Name'].substring(0,20) : payload['Account']['Name'])]</FIELDVALUE>
 			</row>
+		</table>
 		</SELOPT_TAB>
 	</tables>
 </BAPI_CUSTOMER_FIND>]]></sap:definition>
@@ -109,36 +140,87 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
 
 
                         </sap:outbound-endpoint>
-                        <data-mapper:transform config-ref="BAPI_CUSTOMER_FIND_to_Customer" doc:name="BAPI_CUSTOMER_FIND to Customer"/>
+                        <dw:transform-message doc:name="Transform BAPI_CUSTOMER_FIND to Customer">
+                            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload."BAPI_CUSTOMER_FIND".tables."RESULT_TAB".*row map {
+	CustomerNumber : $.CUSTOMER when ($.CUSTOMER != "") otherwise null
+}]]></dw:set-payload>
+                        </dw:transform-message>
                     </processor-chain>
                 </enricher>
                 <choice doc:name="Choice">
-                    <when expression="#[payload['customerInSap'] is NullPayload]">
-                        <expression-component doc:name="set sales area"><![CDATA[payload['SalesOrganization'] = '${account.sapSalesOrganization}';
-payload['DistributionChannel'] = '${account.sapDistributionChannel}';
-payload['Division'] = '${account.sapDivision}';
-payload['RefCustomer'] = '${account.sapRefCustomer}';
-payload['CustomerName'] = '${account.sapRefCustomer}';
-]]></expression-component>
-                        <enricher doc:name="store result in CustomerNumber" target="#[payload['CustomerNumber']]" source="#[payload['CustomerNumber']]">
+                    <when expression="#[payload['CustomerNumber'] == null]">                        
+                        <dw:transform-message doc:name="Set sales areas from properties">
+                            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload ++ {	 
+	SalesOrganization : p('account.sapSalesOrganization'),	
+	DistributionChannel : p('account.sapDistributionChannel'),
+	Division : p('account.sapDivision'),
+	RefCustomer : p('account.sapRefCustomer'),
+	CustomerName : p('account.sapRefCustomer')
+}]]></dw:set-payload>
+                        </dw:transform-message>
+                        <enricher doc:name="store 'CustomerNumber' in the payload" target="#[payload['CustomerNumber']]" source="#[payload['CustomerNumber']]">
 	                        <processor-chain doc:name="Processor Chain">
-                                <data-mapper:transform config-ref="Account_to_BAPI_CUSTOMER_CREATEFROMDATA1" doc:name="Account to BAPI_CUSTOMER_CREATEFROMDATA1"/>
+
+                                <dw:transform-message doc:name="Transform Account to BAPI_CUSTOMER_CREATEFROMDATA1">
+                                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+---
+{
+	"BAPI_CUSTOMER_CREATEFROMDATA1": {
+		import: {
+			"PI_COPYREFERENCE": {
+				SALESORG: payload.SalesOrganization,
+				"DISTR_CHAN": payload.DistributionChannel,
+				DIVISION: payload.Division,
+				"REF_CUSTMR": payload.RefCustomer
+			},
+			"PI_PERSONALDATA": {
+				//"TITLE_P": "Company",
+				//FIRSTNAME: payload.Account.Name when ((sizeOf payload.Account.Name) <= 20)    otherwise payload.Account.Name[0..19],
+				LASTNAME : payload.Account.Name when ((sizeOf payload.Account.Name) <= 20)    otherwise payload.Account.Name[0..19],
+				CITY: "Parsippany",
+				"POSTL_COD1": "07054",
+				COUNTRY: "US",
+				COUNTRYISO: "US",
+				"LANGU_P": "EN",
+				"LANGUP_ISO": "EN",
+				CURRENCY: "USD",
+				"CURRENCY_ISO": "USD"
+			}
+		}
+	}
+}]]></dw:set-payload>
+                                </dw:transform-message>
+
                                 <sap:outbound-endpoint exchange-pattern="request-response" type="function" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_CUSTOMER_CREATEFROMDATA1" bapiTransaction="true" connector-ref="SAP" evaluateFunctionResponse="true" functionName="BAPI_CUSTOMER_CREATEFROMDATA1"/>
-                                <data-mapper:transform config-ref="BAPI_CUSTOMER_CREATEFROMDATA1_to_Customer_Number_Wrapper" doc:name="BAPI_CUSTOMER_CREATEFROMDATA1 to Customer Number Wrapper"/>
+
+                                <dw:transform-message doc:name="Transform BAPI_CUSTOMER_CREATEFROMDATA1 to Customer Number Wrapper">
+                                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	CustomerNumber : payload."BAPI_CUSTOMER_CREATEFROMDATA1".export.CUSTOMERNO
+}]]></dw:set-payload>
+                                </dw:transform-message>
+
 	                        </processor-chain>
                         </enricher>
                     </when>
                     <otherwise>
-                        <enricher target="#[payload['CustomerNumber']]" doc:name="store result in CustomerNumber">
-     	                   <expression-transformer expression="#[payload['customerInSap']['CustomerNumber']]" doc:name="get new account id"/>
-                        </enricher>
 
-                        <enricher doc:name="store Sales Area">
+
+                        <enricher doc:name="store 'Sales Areas' in the payload">
                             <processor-chain doc:name="Processor Chain">
                                 <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_CUSTOMER_GETSALESAREAS" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_CUSTOMER_GETSALESAREAS">
                                     <sap:definition><![CDATA[<BAPI_CUSTOMER_GETSALESAREAS>
 	<import>
-		<CUSTOMERNO>#[payload['customerInSap']['CustomerNumber']]</CUSTOMERNO>
+		<CUSTOMERNO>#[payload['CustomerNumber']]</CUSTOMERNO>
 	</import>
 </BAPI_CUSTOMER_GETSALESAREAS>	]]></sap:definition>
 
@@ -147,7 +229,16 @@ payload['CustomerName'] = '${account.sapRefCustomer}';
 
                                 </sap:outbound-endpoint>
 
-                                <data-mapper:transform config-ref="BAPI_CUSTOMER_GETSALESAREAS_to_Sales_Areas" doc:name="BAPI_CUSTOMER_GETSALESAREAS to Sales Areas"/>
+                                <dw:transform-message doc:name="Transform BAPI_CUSTOMER_GETSALESAREAS to Sales Areas">
+                                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload."BAPI_CUSTOMER_GETSALESAREAS".tables.SALESAREAS.*row map {
+	SalesOrganization : $.SALESORG,
+	Division : $.DIVISION,
+	DistributionChannel : $.DISTRCHN
+}]]></dw:set-payload>
+                                </dw:transform-message>
                             </processor-chain>
                             <enrich source="#[payload[0]['SalesOrganization']]" target="#[payload['SalesOrganization']]"/>
                             <enrich source="#[payload[0]['DistributionChannel']]" target="#[payload['DistributionChannel']]"/>
@@ -157,59 +248,239 @@ payload['CustomerName'] = '${account.sapRefCustomer}';
                 </choice>
             </batch:step>
             <batch:step name="setDummyAccountIdStep" accept-expression="'assignDummyAccount' == '${account.sync.policy}'">
-                <expression-component doc:name="set customer number"><![CDATA[payload.put('CustomerNumber', '${account.sapCustomerNumber}');]]></expression-component>
-            </batch:step>
-			<batch:step name="foreachOpportunityInSalesforceInsertSalesOrderInSapStep" accept-expression="payload['salesOrderInSap'] is NullPayload">
+                <dw:transform-message doc:name="Set CustomerNumber from properties into payload">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload ++ {	 
+	CustomerNumber : p('account.sapCustomerNumber')
+}]]></dw:set-payload>
+                </dw:transform-message>
 
-                <expression-component doc:name="assign numbers to opportunity line items"><![CDATA[payload['CloseDate'] = payload['CloseDate'].replace("-", "");
-if (payload['OpportunityLineItems'] != null) {
-	num = 0;
-	for (record : payload['OpportunityLineItems']['records']) {
-		num += 10;
-		record['ITM_NUMBER'] =String.format("%06d", Integer.parseInt(num));
+            </batch:step>
+			<batch:step name="foreachOpportunityInSalesforceInsertSalesOrderInSapStep" accept-expression="payload['salesOrderInSap'] == null">
+
+
+
+                <dw:transform-message doc:name="Transform Opportunity to BAPI_SALESORDER_CREATEFROMDAT2">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+
+%function convertToArray(record) {
+	records : record when (record is :array) otherwise [record]
+}
+
+%function createItmNumber(position) {
+	ITM_NUMBER : (10 * position) as :string {format: "000000"}
+}
+
+---
+"BAPI_SALESORDER_CREATEFROMDAT2": {
+		import: {
+			"ORDER_HEADER_IN": {
+				"DOC_TYPE": "TA",
+				"SALES_ORG": payload.SalesOrganization,
+				"DISTR_CHAN": payload.DistributionChannel,
+				DIVISION: payload.Division,
+				"REQ_DATE_H": payload.CloseDate replace "-" with "",
+				"PURCH_NO_C": payload.Id,
+				CURRENCY: "EUR"
+			}
+		},
+		tables: {
+			("ORDER_CONDITIONS_IN": {( convertToArray(payload.OpportunityLineItems.records).records map {
+				row : {
+					"ITM_NUMBER": createItmNumber($$ + 1).ITM_NUMBER,
+					"COND_TYPE": "PR00",
+					"COND_VALUE": $.Quantity
+					}
+			} )} ) when payload.OpportunityLineItems != null,
+			("ORDER_ITEMS_IN": {( convertToArray(payload.OpportunityLineItems.records).records map {
+				row : {
+					"ITM_NUMBER": createItmNumber($$ + 1).ITM_NUMBER,
+					MATERIAL: $.PricebookEntry.Product2."sap_external_id__c",
+					"TARGET_QTY": $.Quantity
+					}				
+			} )} ) when payload.OpportunityLineItems != null,
+			("ORDER_ITEMS_INX": {( convertToArray(payload.OpportunityLineItems.records).records map {
+				row : {
+					MATERIAL : "X",
+					UPDATEFLAG : "I",
+					ITM_NUMBER : createItmNumber($$ + 1).ITM_NUMBER
+					}				
+			} )} ) when payload.OpportunityLineItems != null,
+			"ORDER_PARTNERS": {
+				row @(id: 1): {
+					"PARTN_ROLE": "AG",
+					"PARTN_NUMB": payload.CustomerNumber 
+				}
+			},			
+			"ORDER_TEXT": {
+				row @(id: 1): {
+					"TEXT_ID": "0002",
+					LANGU: "EN",
+					"TEXT_LINE": payload.Description
+				},
+				row @(id: 2): {
+					"TEXT_ID": "0011",
+					LANGU: "EN",
+					"TEXT_LINE": payload.ForecastCategory
+				},
+				row @(id: 3): {
+					"TEXT_ID": "0001",
+					LANGU: "EN",
+					"TEXT_LINE": payload.Name
+				}
+			}
+		}
 	}
-}]]></expression-component>
-                <data-mapper:transform config-ref="Opportunity_to_BAPI_SALESORDER_CREATEFROMDAT2" doc:name="Opportunity to BAPI_SALESORDER_CREATEFROMDAT2"/>
+]]></dw:set-payload>
+                </dw:transform-message>
                 <byte-array-to-string-transformer doc:name="Byte Array to String"/>
-                <logger message="55555555 Opportunities to create: #[payload]" level="INFO" doc:name="log Opportunities to create"/>
+
+
+                <logger message="Opportunities to create: #[payload]" level="INFO" doc:name="Log Opportunities to create"/>
                 <sap:outbound-endpoint connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_CREATEFROMDAT2" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_SALESORDER_CREATEFROMDAT2" bapiTransaction="true" exchange-pattern="request-response" evaluateFunctionResponse="true"/>
                 <byte-array-to-string-transformer doc:name="Byte Array to String"/>
-                <logger message="Insert result: #[payload]" level="INFO" doc:name="log Result"/>
-                <expression-component doc:name="don't do update"><![CDATA[payload = new HashMap();
-payload.put('salesOrderInSap', NullPayload.getInstance());]]></expression-component>
-			</batch:step>
-            <batch:step name="foreachOpportunityInSalesforceUpdatesalesorderInSapStep" accept-expression="!(payload['salesOrderInSap'] is NullPayload)">
+                <logger message="Insert result: #[payload]" level="INFO" doc:name="Log Result"/>
+		</batch:step>
+            <batch:step name="foreachOpportunityInSalesforceUpdatesalesorderInSapStep" accept-expression="payload instanceof java.util.Map &amp;&amp; payload['salesOrderInSap'] != null">
 
-                <expression-component doc:name="assign numbers to opportunity line items"><![CDATA[payload['CloseDate'] = payload['CloseDate'].replace("-", "");
-payload.put('CurrencyIsoCode','EUR');
-int max = 0;
-for (item : payload['salesOrderInSap']['Items']) {
-	max = Math.max(max, Integer.parseInt(item['ITM_NUMBER']));
+
+
+                <dw:transform-message doc:name="Transform Opportunity to BAPI_SALESORDER_CHANGE">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+
+%var maxItmNumber = max payload.salesOrderInSap.Items.ITM_NUMBER
+
+%function convertToArray(record) {
+	records : record when (record is :array) otherwise [record]
 }
-if (payload['OpportunityLineItems'] != null) {
-	for (record : payload['OpportunityLineItems']['records']) {
-		max += 10;
-		record['ITM_NUMBER'] =String.format("%06d", Integer.parseInt(max));
-	}
-}]]></expression-component>
 
-                <data-mapper:transform config-ref="Opportunity_to_BAPI_SALESORDER_CHANGE" doc:name="Opportunity to BAPI_SALESORDER_CHANGE"/>
+%function createNextItmNumber(position) {
+	ITM_NUMBER : (maxItmNumber + (10 * position)) as :string {format: "000000"}
+}
+
+---
+"BAPI_SALESORDER_CHANGE": {	
+		import: {
+			"ORDER_HEADER_IN": {
+				"SALES_ORG": payload.SalesOrganization,
+				"DISTR_CHAN": payload.DistributionChannel,
+				DIVISION: payload.Division,
+				"REQ_DATE_H": payload.CloseDate replace "-" with "",
+				CURRENCY: "EUR"
+			},
+			"ORDER_HEADER_INX": {
+				UPDATEFLAG: "U",
+				"SALES_ORG": "X",
+				"DISTR_CHAN": "X",
+				DIVISION: "X",
+				"REQ_DATE_H": "X",
+				NAME: "X",
+				"WAR_DATE": "X",
+				CURRENCY: "X"
+			},
+			SALESDOCUMENT: payload.SALESDOCUMENT
+		},
+		tables: {
+			("ORDER_ITEM_IN": {( (convertToArray(payload.OpportunityLineItems.records).records map {
+				row: {
+					"ITM_NUMBER": createNextItmNumber($$ + 1).ITM_NUMBER,
+					MATERIAL: $.PricebookEntry.Product2."sap_external_id__c",
+					"TARGET_QTY": $.Quantity
+					}				
+			}) ++ (payload.salesOrderInSap.Items map {
+				row: {
+					"ITM_NUMBER": $.ITM_NUMBER					
+				}									
+			}) )} ) when (payload.OpportunityLineItems != null and payload.salesOrderInSap.Items != null),
+			
+			("ORDER_ITEM_IN": {( convertToArray(payload.OpportunityLineItems.records).records map {
+				row: {
+					"ITM_NUMBER": createNextItmNumber($$ + 1).ITM_NUMBER,
+					MATERIAL: $.PricebookEntry.Product2."sap_external_id__c",
+					"TARGET_QTY": $.Quantity
+					}				
+			}) }) when (payload.OpportunityLineItems != null and payload.salesOrderInSap.Items == null),
+			
+			("ORDER_ITEM_IN": {( payload.salesOrderInSap.Items map {
+				row: {
+					"ITM_NUMBER": $.ITM_NUMBER					
+				}									
+			}) }) when (payload.OpportunityLineItems == null and payload.salesOrderInSap.Items != null),
+			
+			("ORDER_ITEM_INX": {( (payload.salesOrderInSap.Items map {
+				row: {
+					"ITM_NUMBER": $.ITM_NUMBER,
+					UPDATEFLAG: "D"
+				}}) ++ (convertToArray(payload.OpportunityLineItems.records).records map {
+				row: {
+					"ITM_NUMBER": createNextItmNumber($$ + 1).ITM_NUMBER,
+					UPDATEFLAG: "I",
+					MATERIAL: "X",
+					"TARGET_QTY": "X"
+				}				
+			}) )} ) when (payload.OpportunityLineItems != null and payload.salesOrderInSap.Items != null),
+			
+			("ORDER_ITEM_INX": {( convertToArray(payload.OpportunityLineItems.records).records map {
+				row: {
+					"ITM_NUMBER": createNextItmNumber($$ + 1).ITM_NUMBER,
+					UPDATEFLAG: "I",
+					MATERIAL: "X",
+					"TARGET_QTY": "X"
+				}				
+			}) }) when (payload.OpportunityLineItems != null and payload.salesOrderInSap.Items == null),
+			
+			("ORDER_ITEM_INX": {( payload.salesOrderInSap.Items map {
+				row: {
+					"ITM_NUMBER": $.ITM_NUMBER,
+					UPDATEFLAG: "D"
+				}			
+			}) }) when (payload.OpportunityLineItems == null and payload.salesOrderInSap.Items != null),
+			
+			"ORDER_TEXT": {
+				row: {
+					"TEXT_ID": "0002",
+					LANGU: "EN",
+					"TEXT_LINE": payload.Description
+				},
+				row : {
+					"TEXT_ID": "0011",
+					LANGU: "EN",
+					"TEXT_LINE": payload.ForecastCategory
+				},
+				row : {
+					"TEXT_ID": "0001",
+					LANGU: "EN",
+					"TEXT_LINE": payload.Name
+				}
+			}
+		}
+	}	]]></dw:set-payload>
+                </dw:transform-message>
+
+
+
                 <byte-array-to-string-transformer doc:name="Byte Array to String"/>
+                <logger message="Opportunities to update: #[payload]" level="INFO" doc:name="Log Opportunities to update"/>
 
                 <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_CHANGE" xmlVersion="2" outputXml="true" bapiTransaction="true" responseTimeout="10000" doc:name="BAPI_SALESORDER_CHANGE" evaluateFunctionResponse="true"/>
+
                 <byte-array-to-string-transformer doc:name="Byte Array to String"/>
-                <logger message="Update result: #[payload]" level="INFO" doc:name="log Result"/>
+                <logger message="Update result: #[payload]" level="INFO" doc:name="Log Result"/>
             </batch:step>
 		</batch:process-records>
 		<batch:on-complete>
 			<scatter-gather doc:name="All">
                 <processor-chain>
-                    <json:object-to-json-transformer doc:name="transform BatchJobInstance to JSON"/>
-                    <logger message="Migration process has finished: #[payload]" level="INFO" doc:name="log migration process has finished"/>
+                    <json:object-to-json-transformer doc:name="Transform BatchJobInstance to JSON"/>
+                    <logger message="Migration process has finished: #[payload]" level="INFO" doc:name="Log migration process has finished"/>
                 </processor-chain>
                 <processor-chain>
-                    <json:object-to-json-transformer doc:name="transform BatchJobInstance to JSON"/>
-                    <smtp:outbound-endpoint host="${smtp.host}" port="${smtp.port}" user="${smtp.user}" password="${smtp.password}" to="${mail.to}" from="${mail.from}" subject="${mail.subject}" responseTimeout="10000" connector-ref="Gmail" doc:name="send result of the batch in mail"/>
+                    <json:object-to-json-transformer doc:name="Transform BatchJobInstance to JSON"/>
+                    <smtp:outbound-endpoint host="${smtp.host}" port="${smtp.port}" user="${smtp.user}" password="${smtp.password}" to="${mail.to}" from="${mail.from}" subject="${mail.subject}" responseTimeout="10000" connector-ref="Gmail" doc:name="Send result of the batch in mail"/>
                 </processor-chain>
             </scatter-gather>
 		</batch:on-complete>

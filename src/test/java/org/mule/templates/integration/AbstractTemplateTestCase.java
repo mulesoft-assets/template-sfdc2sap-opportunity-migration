@@ -107,10 +107,10 @@ public abstract class AbstractTemplateTestCase extends FunctionalTestCase {
 		flow = lookupFlowConstruct("deleteSalesOrderFromSapFlow");
 //		flow.initialise();
 		for (Map<String, Object> c : createdOpportunities) {
-			System.out.println("CCC: " + c);
 			Map<String, Object> opportunity = invokeRetrieveFlow(retrieveSalesOrderFromSapFlow, c);
-			if (opportunity != null) {
-				idList.add((String) opportunity.get("Id"));
+			String opportunityId = (String)opportunity.get("Id");
+			if (opportunityId != null) {
+				idList.add(opportunityId);
 			}
 		}
 		flow.process(getTestEvent(idList, MessageExchangePattern.REQUEST_RESPONSE));
@@ -134,7 +134,6 @@ public abstract class AbstractTemplateTestCase extends FunctionalTestCase {
 		for (Map<String, Object> c : createdAccounts) {
 			Map<String, Object> account = invokeRetrieveFlow(retrieveAccountFromSapFlow, c);
 			if (account != null) {
-				System.out.println("AAAAACCCCC: " + account);
 				idList.add(account.get("Id"));
 			}
 		}

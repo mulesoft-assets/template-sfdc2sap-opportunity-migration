@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"  xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.7.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
-http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
-http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
 http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
-    <flow name="createOpportunityInSalesforceFlow" doc:name="createOpportunityInSalesforceFlow">
-        <sfdc:create config-ref="Salesforce" type="Opportunity" doc:name="create Opportunity in Salesforce">
+    <flow name="createOpportunityInSalesforceFlow" >
+        <sfdc:create config-ref="Salesforce" type="Opportunity" doc:name="Create Opportunity in Salesforce">
             <sfdc:objects ref="#[payload]"/>
         </sfdc:create>
+
         <logger level="INFO" message="Create Opportunities in Salesforce result: #[payload]" doc:name="Logger"/>
     </flow>
-    <flow name="retrieveSalesOrderFromSapFlow" doc:name="retrieveSalesOrderFromSapFlow">
+    <flow name="retrieveSalesOrderFromSapFlow" >
         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_SALESORDER_GETLIST">
             <sap:definition><![CDATA[<BAPI_SALESORDER_GETLIST>
 	<import>
@@ -22,74 +23,24 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 </BAPI_SALESORDER_GETLIST>]]></sap:definition>
 
         </sap:outbound-endpoint>
-        <data-mapper:transform config-ref="BAPI_SALESORDER_GETLIST_to_Sales_Order" doc:name="BAPI_SALESORDER_GETLIST to Sales Order"/>
-        <choice doc:name="Choice">
-            <when expression="#[!(payload is NullPayload)]">
-                <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_ISAORDER_GETDETAILEDLIST" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="SAP BAPI_ISAORDER_GETDETAILEDLIST">
-                    <sap:definition><![CDATA[<BAPI_ISAORDER_GETDETAILEDLIST>
-	<import>
-		<I_BAPI_VIEW>
-			<ITEM>X</ITEM>
-			<SDCOND>X</SDCOND>
-			<STATUS_H>X</STATUS_H>
-			<TEXT>X</TEXT>
-			<PARTNER>X</PARTNER>
-		</I_BAPI_VIEW>
-	</import>
-	<tables>
-		<SALES_DOCUMENTS>
-			<row>
-				<VBELN>#[payload['Id']]</VBELN>
-			</row>
-		</SALES_DOCUMENTS>
-	</tables>
-</BAPI_ISAORDER_GETDETAILEDLIST>]]></sap:definition>
-
-                </sap:outbound-endpoint>
-                <byte-array-to-string-transformer doc:name="Byte Array to String"/>
-                <data-mapper:transform config-ref="BAPI_ISAORDER_GETDETAILEDLIST_to_Sales_Order" doc:name="BAPI_ISAORDER_GETDETAILEDLIST to Sales Order"/>
-                <expression-component doc:name="Expression"><![CDATA[soMap = new HashMap();
-
-for (statusHeader : payload['StatusHeaders']) {
-	soMap.put(statusHeader['Id'], [ 'Status' : statusHeader['Status'], 'Id' : statusHeader['Id']]);
-}
-
-for (partner : payload['Partners']) {
-	item = soMap.get(partner['Id']);
-	if (item != null) {
-		item.put('AccountId', partner.get('customerId'));
-	}
-}
-
-textNameToLine = new HashMap();
-for (textLine : payload['TextLines']) {
-	textNameToLine.put(textLine.get('TextName'), textLine.get('Line'));
-}
-
-for (textHeader : payload['TextHeaders']) {
-    item = soMap.get(textHeader.get('Id'));
-	if (item != null) {
-		item.put('Name', textNameToLine.get(textHeader.get('TextName')));
-	}
-}
-
-iter = soMap.values().iterator();
-payload = iter.hasNext() ? iter.next() : NullPayload.getInstance();
-]]></expression-component>
-                <logger message="Retrieve Opportunities result: #[payload]" level="INFO" doc:name="Logger"/>
-            </when>
-            <otherwise>
-                <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
-            </otherwise>
-        </choice>
-    </flow>
-    <flow name="deleteOpportunityFromSalesforceFlow" doc:name="deleteOpportunityFromSalesforceFlow">
-        <sfdc:delete config-ref="Salesforce" doc:name="delete Opportunity from Salesforce instance Salesforce">
+        <dw:transform-message doc:name="BAPI_SALESORDER_GETLIST to Sales Order Id">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+using (so = payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0] when payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS" != "" otherwise null)
+{
+	Id: so.SD_DOC when (so != null) otherwise null,
+	AccountId: so.SOLD_TO when (so != null) otherwise null
+}]]></dw:set-payload>
+        </dw:transform-message>
+           </flow>
+    <flow name="deleteOpportunityFromSalesforceFlow" >
+        <sfdc:delete config-ref="Salesforce" doc:name="Delete Opportunity from Salesforce instance Salesforce">
             <sfdc:ids ref="#[payload]"/>
         </sfdc:delete>
         <logger level="INFO" message="Remove Opportunities from Salesforce result: #[payload]" doc:name="Logger"/>
     </flow>
-    <flow name="deleteSalesOrderFromSapFlow" doc:name="deleteSalesOrderFromSapFlow">
+    <flow name="deleteSalesOrderFromSapFlow" >
         <foreach doc:name="For Each">
             <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_CHANGE" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" bapiTransaction="true" responseTimeout="10000" doc:name="Delete Sales Order from SAP">
                 <sap:transaction action="NONE"/>
@@ -107,14 +58,14 @@ payload = iter.hasNext() ? iter.next() : NullPayload.getInstance();
         </foreach>
     </flow>
     
-    <flow name="createAccountInSalesforceFlow" doc:name="createAccountInSalesforceFlow">
+    <flow name="createAccountInSalesforceFlow" >
         <sfdc:create config-ref="Salesforce" type="Account" doc:name="Salesforce">
             <sfdc:objects ref="#[payload]"/>
         </sfdc:create>
         <logger level="INFO" message="Create Account in Salesforce result: #[payload]" doc:name="Logger"/>
     </flow>
-    <flow name="retrieveAccountFromSapFlow" doc:name="retrieveAccountFromSapFlow">
-                <enricher source="#[payload[0]['CustomerNumber'] == null ? NullPayload.getInstance() : payload[0]]" target="#[payload]" doc:name="store result in customerInSap">
+    <flow name="retrieveAccountFromSapFlow" >
+                <enricher source="#[payload[0]['CustomerNumber'] == null ? null : payload[0]]" target="#[payload]" doc:name="store result in customerInSap">
                     <processor-chain doc:name="Processor Chain">
                         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_CUSTOMER_FIND" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Get Customer by Name">
                     <sap:definition><![CDATA[<BAPI_CUSTOMER_FIND>
@@ -127,7 +78,7 @@ payload = iter.hasNext() ? iter.next() : NullPayload.getInstance();
 			<row id="0">
 				<TABNAME>KNA1</TABNAME>
 				<FIELDNAME>NAME1</FIELDNAME>
-				<FIELDVALUE>#[payload['Name']]</FIELDVALUE>
+				<FIELDVALUE>#[org.apache.commons.lang3.StringEscapeUtils.escapeXml(payload['Name'].length() > 20 ? payload['Name'].substring(0,20) : payload['Name'])]</FIELDVALUE>
 			</row>
 		</SELOPT_TAB>
 	</tables>
@@ -135,18 +86,26 @@ payload = iter.hasNext() ? iter.next() : NullPayload.getInstance();
 ]]></sap:definition>
 
                         </sap:outbound-endpoint>
-                        <data-mapper:transform config-ref="BAPI_CUSTOMER_FIND_to_Customer" doc:name="BAPI_CUSTOMER_FIND to Customer"/>
+                        <dw:transform-message doc:name="Transform BAPI_CUSTOMER_FIND to Customer">
+                            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload."BAPI_CUSTOMER_FIND".tables."RESULT_TAB".*row map {
+	CustomerNumber : $.CUSTOMER when ($.CUSTOMER != "") otherwise null,
+	Name : $.FIELDVALUE	
+}]]></dw:set-payload>
+                        </dw:transform-message>
                     </processor-chain>
                 </enricher>
         <logger level="INFO" message="Retrieve Accounts result: #[payload]" doc:name="Logger"/>
     </flow>
-    <flow name="deleteAccountFromSalesforceFlow" doc:name="deleteAccountFromSalesforceFlow">
+    <flow name="deleteAccountFromSalesforceFlow" >
         <sfdc:delete config-ref="Salesforce" doc:name="Salesforce">
             <sfdc:ids ref="#[payload]"/>
         </sfdc:delete>
         <logger level="INFO" message="Remove Accounts from Salesforce result: #[payload]" doc:name="Logger"/>
     </flow>
-    <flow name="deleteAccountFromSapFlow" doc:name="deleteAccountFromSapFlow">
+    <flow name="deleteAccountFromSapFlow" >
         <foreach doc:name="For Each">
             <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="ZMULE_CUSTOMER_DELETE" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Delete Customer from SAP">
                 <sap:definition><![CDATA[<ZMULE_CUSTOMER_DELETE>
