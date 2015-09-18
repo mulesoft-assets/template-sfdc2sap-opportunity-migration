@@ -18,7 +18,7 @@ In next batch step customer is looked up by opportunity account name if sync pol
 If the customer is found its sales areas are fetched from SAP and first one is selected to be used in sales order creation.
 If it is not found, then new customer is created with preconfigured sales area.
 Template doesn't support changing customer of the existing sales order.
-Next batch step is executed only if preconfigured (dummy) account is configured to be used. In that step also preconfigured sales area is set up.
+Next batch step is executed only if preconfigured (dummy) account is configured to be used. In that step also preconfigured sales area and customer number are set up.
 Account synchronization policy must be either `syncAccount` or `assignDummyAccount`. Sales order creation will fail if it has no account (ship to) assigned.
 Next two steps creates or updates sales order in SAP. 
 Finally during the On Complete stage the Anypoint Template will send an email and log output statistics data into the console.
