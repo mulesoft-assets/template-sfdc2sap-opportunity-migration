@@ -11,7 +11,7 @@ Requirements have been set not only to be used as examples, but also to establis
 			
 As implemented, this Anypoint Template leverage the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
 The batch job is divided in Input, Process and On Complete stages.
-The integration is triggered by the HTTP endpoint to fetch all Salesforce won opportunities suitable for migration.
+The integration is triggered by the HTTP endpoint to fetch all Salesforce won opportunities with assigned Account suitable for migration. 
 In the batch the sales order is fetched from SAP by its purchase order number equal to opportunity ID.
 If it exists, more sales order details are fetched from SAP.
 In next batch step customer is looked up by opportunity account name if sync policy is set to synchronize accounts.
@@ -69,7 +69,7 @@ These dependencies are private for Mulesoft and will cause you application not t
 + sfdc.username `bob.dylan@sfdc`
 + sfdc.password `DylanPassword123`
 + sfdc.securityToken `avsfwCUl7apQs56Xq2AKi3X`
-+ sfdc.url `https://test.salesforce.com/services/Soap/u/28.0`
++ sfdc.url `https://test.salesforce.com/services/Soap/u/32.0`
 
 **SAP Connector configuration**
 
@@ -80,7 +80,7 @@ These dependencies are private for Mulesoft and will cause you application not t
 + sap.jco.client `800`
 + sap.jco.lang `EN`
 
-**SMPT Services configuration**
+**SMTP Services configuration**
 
 + smtp.host `smtp.gmail.com`
 + smtp.port `587`

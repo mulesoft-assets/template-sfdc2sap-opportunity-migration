@@ -110,7 +110,7 @@ using (so = payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].SD_D
                     </otherwise>
                 </choice>
 			</batch:step>
-			 <batch:step name="findOrCreateCustomerInSapSetp" accept-expression="'syncAccount' == '${account.sync.policy}'">
+			 <batch:step name="findOrCreateCustomerInSapStep" accept-expression="'syncAccount' == '${account.sync.policy}'">
 
                 <enricher source="#[payload[0]['CustomerNumber'] == null ? null : payload[0]['CustomerNumber']]" target="#[payload['CustomerNumber']]" doc:name="store 'CustomerNumber' in the payload">
                     <processor-chain doc:name="Processor Chain">
@@ -337,7 +337,6 @@ payload ++ {
 ]]></dw:set-payload>
                 </dw:transform-message>
                 <byte-array-to-string-transformer doc:name="Byte Array to String"/>
-
 
                 <logger message="Opportunities to create: #[payload]" level="INFO" doc:name="Log Opportunities to create"/>
                 <sap:outbound-endpoint connector-ref="SAP" type="function" functionName="BAPI_SALESORDER_CREATEFROMDAT2" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="BAPI_SALESORDER_CREATEFROMDAT2" bapiTransaction="true" exchange-pattern="request-response" evaluateFunctionResponse="true"/>
