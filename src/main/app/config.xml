@@ -4,7 +4,7 @@
 	xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:sap="http://www.mulesoft.org/schema/mule/sap"
 	xmlns:context="http://www.springframework.org/schema/context" xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.7.1"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
@@ -26,7 +26,7 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
 
 	<sfdc:config name="Salesforce" username="${sfdc.username}"
 		password="${sfdc.password}" securityToken="${sfdc.securityToken}" url="${sfdc.url}"
-		doc:name="Salesforce">
+		doc:name="Salesforce" disableSessionInvalidation="true">
 	</sfdc:config>
     <smtp:gmail-connector name="Gmail" validateConnections="true" doc:name="Gmail"/>
 
