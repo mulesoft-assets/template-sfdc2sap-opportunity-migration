@@ -81,6 +81,8 @@ public class BusinessLogicTestCreateAccountIT extends AbstractTemplateTestCase {
 		// Wait for the batch job executed by the poll flow to finish
 		helper.awaitJobTermination(TIMEOUT_SEC * 1000, 500);
 		helper.assertJobWasSuccessful();
+		
+		Thread.sleep(15000);
 
 		Assert.assertNull("The opportunity should not have been sync", invokeRetrieveFlow(retrieveSalesOrderFromSapFlow, createdOpportunities.get(0)).get("Id"));
 		Assert.assertNull("The opportunity should not have been sync", invokeRetrieveFlow(retrieveSalesOrderFromSapFlow, createdOpportunities.get(1)).get("Id"));
