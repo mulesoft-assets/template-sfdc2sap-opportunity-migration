@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
-	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"  xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.7.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"  xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
@@ -107,12 +107,12 @@ payload."BAPI_CUSTOMER_FIND".tables."RESULT_TAB".*row map {
     </flow>
     <flow name="deleteAccountFromSapFlow" >
         <foreach doc:name="For Each">
-            <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="ZMULE_CUSTOMER_DELETE" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Delete Customer from SAP">
-                <sap:definition><![CDATA[<ZMULE_CUSTOMER_DELETE>
+            <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="ZCAFM_CUSTOMER_DELETE" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Delete Customer from SAP">
+                <sap:definition><![CDATA[<ZCAFM_CUSTOMER_DELETE>
 	<import>
-		<I_CUSTOMER>#[payload]</I_CUSTOMER>
+		<PI_CUSTOMER >#[payload]</PI_CUSTOMER >
 	</import>
-</ZMULE_CUSTOMER_DELETE>
+</ZCAFM_CUSTOMER_DELETE>
 ]]></sap:definition>
 
             </sap:outbound-endpoint>
