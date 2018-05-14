@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+    xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns="http://www.mulesoft.org/schema/mule/core"
+    xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd">
+
+
+    <flow name="businessLogicFlow" doc:id="884f86c5-66e1-4701-bb9b-594c2a60abf3">
+        <salesforce:query doc:name="Query Opportunities with filtering criteria from Salesforce" doc:id="4ffa0718-cf1b-4217-977c-db473b1ab0bb"
+            config-ref="Salesforce_Sfdc_config">
+            <salesforce:salesforce-query>SELECT Id, LastModifiedDate, Name, Amount, StageName, Probability, CloseDate, Type, Description,
+                ForecastCategory, (SELECT ListPrice, Description, Quantity, TotalPrice, UnitPrice,
+                PricebookEntry.Product2.sap_external_id__c FROM Opportunity.OpportunityLineItems ORDER BY SortOrder), Account.Id,
+                Account.Name, Account.AccountNumber, Account.AccountSource, Account.AnnualRevenue, Account.BillingCity,
+                Account.BillingCountry, Account.BillingPostalCode, Account.BillingState, Account.BillingStreet, Account.Description,
+                Account.Fax, Account.Industry, Account.NumberOfEmployees, Account.Ownership, Account.ParentId, Account.Phone,
+                Account.Rating, Account.ShippingCity, Account.ShippingCountry, Account.ShippingPostalCode, Account.ShippingState,
+                Account.ShippingStreet, Account.Sic, Account.SicDesc, Account.Site, Account.TickerSymbol, Account.Type, Account.Website FROM
+                Opportunity WHERE IsWon = true AND Account.Name != null</salesforce:salesforce-query>
+        </salesforce:query>
+        <batch:job jobName="migrateOpportunitiesBatch" doc:id="79b373e6-1aeb-43a9-9dfe-8ac0d2f31fdc">
+            <batch:process-records>
+                <batch:step name="foreachOpportunityInSalesforceGetSalesOrderInSapStep" doc:id="232087de-e311-49c1-a890-439c65ea1af2">
+                    <ee:transform doc:name="Set XML input" doc:id="d87e5be1-8290-4aa2-b7a2-7a8175694f57">
+                        <ee:message>
+                            <ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  "BAPI_SALESORDER_GETLIST": {
+    "import": {
+      "PURCHASE_ORDER_NUMBER": payload.Id
+    }
+  }
+}]]></ee:set-payload>
+                        </ee:message>
+                        <ee:variables>
+                            <ee:set-variable variableName="opportunity"><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-variable>
+                        </ee:variables>
+                    </ee:transform>
+                    <sap:execute-synchronous-remote-function-call doc:name="BAPI_SALESORDER_GETLIST"
+                        doc:id="02cf21c4-949b-48da-b4e0-bc93f1a1ebfc" config-ref="SAP_Outbound" key="BAPI_SALESORDER_GETLIST" />
+                    <ee:transform doc:name="Store result to variable oppotunity" doc:id="5124356a-52ec-4456-bd00-60e1bf89d157">
+                        <ee:message>
+                        </ee:message>
+                        <ee:variables>
+                            <ee:set-variable variableName="opportunity"><![CDATA[%dw 2.0
+output application/java
+---
+vars.opportunity ++ {
+	SALESDOCUMENT: if(payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS" != null) (payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].SD_DOC)  else null
+}]]></ee:set-variable>
+                        </ee:variables>
+                    </ee:transform>
+                    <choice doc:name="SALESDOCUMENT?" doc:id="fa194236-ba1c-42ea-9598-3d7185ba8299">
+                        <when expression="#[vars.opportunity.SALESDOCUMENT != null]">
+                            <ee:transform doc:name="Set XML input" doc:id="61027975-4839-45dc-a323-732e253f50b1">
+                                <ee:message>
+                                    <ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  "BAPI_ISAORDER_GETDETAILEDLIST": {
+    "import": {
+      "I_BAPI_VIEW": {
+        "ITEM": "X",
+        "SDCOND": "X"
+      }
+    },
+    "tables": {
+      "SALES_DOCUMENTS": {
+        "row": {
+          "VBELN": vars.opportunity.SALESDOCUMENT
+        }
+      }
+    }
+  }
+}]]></ee:set-payload>
+                                </ee:message>
+                            </ee:transform>
+                            <sap:execute-synchronous-remote-function-call key="BAPI_ISAORDER_GETDETAILEDLIST"
+                                doc:name="SAP BAPI_ISAORDER_GETDETAILEDLIST" doc:id="3071d051-b7e1-418c-bc3c-162990e1ad02" config-ref="SAP_Outbound" />
+                            <ee:transform doc:name="Transform BAPI_ISAORDER_GETDETAILEDLIST to Sales Order" doc:id="67950dd9-f49c-4c6f-93fa-583ebb2084f8">
+                                <ee:message>
+                                    <ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+vars.opportunity ++ {
+	salesOrderInSap: { 
+	(Conditions: payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_CONDITIONS_OUT".*row map {
+		ITM_NUMBER : $.ITM_NUMBER,
+		Id : $.SD_DOC
+	})  if (payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_CONDITIONS_OUT" != null),
+	
+	(Items: payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_ITEMS_OUT".*row map {
+		ITM_NUMBER : $.ITM_NUMBER,
+		Id : $.DOC_NUMBER
+	})  if (payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_ITEMS_OUT" != null),
+	
+	(Partners: payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_PARTNERS_OUT".*row map {
+		Id : $.SD_DOC,
+		customerId : $.CUSTOMER
+	})  if (payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_PARTNERS_OUT" != null),
+	
+	(StatusHeaders: payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_STATUSHEADERS_OUT".*row map {
+		Id : $.SD_DOC,
+		Status : $.ISA_DOC_STATUS
+	})  if (payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_STATUSHEADERS_OUT" != null),
+	
+	(TextHeaders: payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_TEXTHEADERS_OUT".*row map {
+		TextName : $.TEXT_NAME,
+		Id : $.SD_DOC
+	})  if (payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_TEXTHEADERS_OUT" != null),
+	
+	(TextLines: payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_TEXTLINES_OUT".*row map {
+		Line : $.LINE,
+		TextName : $.TEXT_NAME
+	})  if (payload."BAPI_ISAORDER_GETDETAILEDLIST".tables."ORDER_TEXTLINES_OUT" != null)
+}
+}]]></ee:set-payload>
+                                </ee:message>
+                                <ee:variables>
+                                </ee:variables>
+                            </ee:transform>
+                        </when>
+                        <otherwise>
+                            <logger level="INFO" doc:name="Logger" doc:id="1c934a04-1d9d-4cc8-8e82-021bdd916c4b"
+                                message="The Opportunity does not exist in SAP, new one will be created." />
+							<ee:transform doc:name="Set payload" doc:id="dc6452ec-9827-474d-a2c8-0ba7f45e2628" >
+								<ee:message >
+									<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+vars.opportunity]]></ee:set-payload>
+								</ee:message>
+							</ee:transform>
+                        </otherwise>
+                    </choice>
+                </batch:step>
+                <batch:step name="findOrCreateCustomerInSapStep" doc:id="d4f06ac2-4ff2-4708-a29f-8a4e3679c414" acceptExpression="'${account.sync.policy}' == 'syncAccount'">
+                    <ee:transform doc:name="Set XML input" doc:id="4a4a8fbf-883b-41f2-bc4e-87a64c8ed17d">
+                        <ee:message>
+                            <ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	"BAPI_CUSTOMER_FIND": {
+		"import": {
+			"MAX_CNT": "0",
+			"PL_HOLD": "X"
+		},
+		"tables": {
+			"SELOPT_TAB": {
+				"row": {
+					"TABNAME": "KNA1",
+					"FIELDNAME": "NAME1",
+					("FIELDVALUE": if(sizeOf(vars.opportunity.Account.Name) > 20) (vars.opportunity.Account.Name[0 to 19]) else vars.opportunity.Account.Name)
+				}
+			}
+		}
+	}
+}]]></ee:set-payload>
+                        </ee:message>
+                        <ee:variables>
+                            <ee:set-variable variableName="opportunity"><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-variable>
+                        </ee:variables>
+                    </ee:transform>
+                    <sap:execute-synchronous-remote-function-call doc:name="Get Customer by Name"
+                        doc:id="ddcc100e-4fa0-4d38-a2ba-f839bf82b1cc" config-ref="SAP_Outbound" key="BAPI_CUSTOMER_FIND" />
+                    <ee:transform doc:name="BAPI CUSTOMER FIND to payload" doc:id="46b2aeb7-64ba-4e85-a09b-fb90912a9e2c">
+                        <ee:message>
+                            <ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload."BAPI_CUSTOMER_FIND".tables."RESULT_TAB".*row map 
+{
+	(CustomerNumber : $.CUSTOMER) if ($.CUSTOMER != null)
+}]]></ee:set-payload>
+                        </ee:message>
+                        <ee:variables>
+                        </ee:variables>
+                    </ee:transform>
+                    <choice doc:name="customerNumber?" doc:id="3593e298-fc14-4668-a382-0ddee196eeea">
+                        <when expression="#[payload.CustomerNumber[0] != null]">
+                            <ee:transform doc:name="Set XML input and store customerNumber" doc:id="ac07bd96-9088-460d-ac0e-f89cbcf5133d">
+                                <ee:message>
+                                    <ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  "BAPI_CUSTOMER_GETSALESAREAS": {
+    "import": {
+      "CUSTOMERNO": payload.CustomerNumber[0]
+    }
+  }
+}]]></ee:set-payload>
+                                </ee:message>
+                                <ee:variables>
+                                    <ee:set-variable variableName="opportunity"><![CDATA[%dw 2.0
+output application/java
+---
+vars.opportunity ++ {
+	CustomerNumber:payload.CustomerNumber[0]
+}]]></ee:set-variable>
+                                </ee:variables>
+                            </ee:transform>
+                            <sap:execute-synchronous-remote-function-call doc:name="Get Account Group from SAP"
+                                doc:id="1c4c4783-f41a-49aa-9fd9-28f3ac3bb788" config-ref="SAP_Outbound" key="BAPI_CUSTOMER_GETSALESAREAS" />
+                            <ee:transform doc:name="Add Data to payload" doc:id="0c87280c-728b-470f-a5a3-f180ab3de356">
+                                <ee:message>
+                                    <ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+vars.opportunity ++
+{
+	SalesOrganization : payload."BAPI_CUSTOMER_GETSALESAREAS".tables.SALESAREAS.*row[0].SALESORG,
+	Division : payload."BAPI_CUSTOMER_GETSALESAREAS".tables.SALESAREAS.*row[0].DIVISION,
+	DistributionChannel : payload."BAPI_CUSTOMER_GETSALESAREAS".tables.SALESAREAS.*row[0].DISTRCHN
+}]]></ee:set-payload>
+                                </ee:message>
+                                <ee:variables>
+                                </ee:variables>
+                            </ee:transform>
+                        </when>
+                        <otherwise>
+                            <ee:transform doc:name="Set XML input" doc:id="78269692-1e57-4a26-8af8-92d29cb9f622">
+                                <ee:message>
+                                    <ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	"BAPI_CUSTOMER_CREATEFROMDATA1": {
+		"import": {
+			"PI_COPYREFERENCE": {
+				"SALESORG": p('account.sapSalesOrganization'),
+				"DISTR_CHAN": p('account.sapDistributionChannel'),
+				"DIVISION": p('account.sapDivision'),
+				"REF_CUSTMR": p('account.sapRefCustomer')
+			},
+			"PI_PERSONALDATA": {
+				("LASTNAME" :  if(sizeOf(vars.opportunity.Account.Name) > 20) (vars.opportunity.Account.Name[0 to 19]) else vars.opportunity.Account.Name),
+				"CITY": "Parsippany",
+				"POSTL_COD1": "07054",
+				"COUNTRY": "US",
+				"COUNTRYISO": "US",
+				"LANGU_P": "EN",
+				"LANGUP_ISO": "EN",
+				"CURRENCY": "USD",
+				"CURRENCY_ISO": "USD"
+			}
+		}
+	}
+}]]></ee:set-payload>
+                                </ee:message>
+                            </ee:transform>
+                            <sap:execute-synchronous-remote-function-call doc:name="Get Next Customer Number from SAP"
+                                doc:id="1b6a9050-5a61-4fad-afa2-c986847d8a1b" config-ref="SAP_Outbound" key="BAPI_CUSTOMER_CREATEFROMDATA1" />
+                            <ee:transform doc:name="Add Data to payload" doc:id="cd8743ca-bf18-440f-92e3-58531a25b599">
+                                <ee:message>
+                                    <ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+vars.opportunity ++
+{
+	CustomerNumber : payload."BAPI_CUSTOMER_CREATEFROMDATA1".export.CUSTOMERNO
+}]]></ee:set-payload>
+                                </ee:message>
+                                <ee:variables>
+                                </ee:variables>
+                            </ee:transform>
+                        </otherwise>
+                    </choice>
+                </batch:step>
+                <batch:step name="setDummyAccountIdStep" doc:id="cb3e8e19-6360-4d80-ad1f-ddf07918a012" acceptExpression="'assignDummyAccount' == '${account.sync.policy}'">
+                    <ee:transform doc:name="Set CustomerNumber from properties into payload" doc:id="4239bae5-a0aa-430c-ac3b-f23aa3dfff0f">
+                        <ee:message>
+                            <ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload ++ {	 
+	CustomerNumber : p('account.sapCustomerNumber')
+}]]></ee:set-payload>
+                        </ee:message>
+                    </ee:transform>
+                </batch:step>
+                <batch:step name="foreachOpportunityInSalesforceUpsertSalesOrderInSapStep" doc:id="fe9234bf-7c16-4bf7-8611-ddab393e86ad">
+					<choice doc:name="salesOrderInSap?" doc:id="ed58c174-0be8-46f6-b4de-d3b70626f384">
+                        <when expression="#[payload.salesOrderInSap.Items[0] != null]">
+                            <ee:transform doc:name="Transform Opportunity to BAPI_SALESORDER_CHANGE" doc:id="9957846f-2ca5-4366-be9d-8877260d209c">
+                                <ee:message>
+                                    <ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+var maxItmNumber = max (payload.salesOrderInSap.Items.ITM_NUMBER)
+fun convertToArray(record) = {
+	records : if (record is Array) record else [record]
+}
+fun createNextItmNumber(position) = {
+	ITM_NUMBER : (maxItmNumber + (10 * position)) as String {format: "000000"}
+}
+---
+"BAPI_SALESORDER_CHANGE": {	
+		"import": {
+			"ORDER_HEADER_IN": {
+				"SALES_ORG": payload.SalesOrganization,
+				"DISTR_CHAN": payload.DistributionChannel,
+				"DIVISION": payload.Division,
+				"REQ_DATE_H": payload.CloseDate replace "-" with "",
+				"CURRENCY": "EUR"
+			},
+			"ORDER_HEADER_INX": {
+				"UPDATEFLAG": "U",
+				"SALES_ORG": "X",
+				"DISTR_CHAN": "X",
+				"DIVISION": "X",
+				"REQ_DATE_H": "X",
+				"NAME": "X",
+				"WAR_DATE": "X",
+				"CURRENCY": "X"
+			},
+			"ALESDOCUMENT": payload.SALESDOCUMENT
+		},
+		"tables": {
+			("ORDER_ITEM_IN": {( (convertToArray(payload.OpportunityLineItems.records).records map {
+				"row": {
+					"ITM_NUMBER": createNextItmNumber($$ + 1).ITM_NUMBER,
+					"MATERIAL": $.PricebookEntry.Product2."sap_external_id__c",
+					"TARGET_QTY": $.Quantity
+					}				
+			}) ++ (payload.salesOrderInSap.Items map {
+				"row": {
+					"ITM_NUMBER": $.ITM_NUMBER					
+				}									
+			}) )} ) if (payload.OpportunityLineItems != null and payload.salesOrderInSap.Items != null),
+			
+			("ORDER_ITEM_IN": {( convertToArray(payload.OpportunityLineItems.records).records map {
+				"row": {
+					"ITM_NUMBER": createNextItmNumber($$ + 1).ITM_NUMBER,
+					"MATERIAL": $.PricebookEntry.Product2."sap_external_id__c",
+					"TARGET_QTY": $.Quantity
+					}				
+			}) }) if (payload.OpportunityLineItems != null and payload.salesOrderInSap.Items == null),
+			
+			("ORDER_ITEM_IN": {( payload.salesOrderInSap.Items map {
+				"row": {
+					"ITM_NUMBER": $.ITM_NUMBER					
+				}									
+			}) }) if (payload.OpportunityLineItems == null and payload.salesOrderInSap.Items != null),
+			
+			("ORDER_ITEM_INX": {( (payload.salesOrderInSap.Items map {
+				"row": {
+					"ITM_NUMBER": $.ITM_NUMBER,
+					UPDATEFLAG: "D"
+				}}) ++ (convertToArray(payload.OpportunityLineItems.records).records map {
+				"row": {
+					"ITM_NUMBER": createNextItmNumber($$ + 1).ITM_NUMBER,
+					"UPDATEFLAG": "I",
+					"MATERIAL": "X",
+					"TARGET_QTY": "X"
+				}				
+			}) )} ) if (payload.OpportunityLineItems != null and payload.salesOrderInSap.Items != null),
+			
+			("ORDER_ITEM_INX": {( convertToArray(payload.OpportunityLineItems.records).records map {
+				"row": {
+					"ITM_NUMBER": createNextItmNumber($$ + 1).ITM_NUMBER,
+					"UPDATEFLAG": "I",
+					"MATERIAL": "X",
+					"TARGET_QTY": "X"
+				}				
+			}) }) if (payload.OpportunityLineItems != null and payload.salesOrderInSap.Items == null),
+			
+			("ORDER_ITEM_INX": {( payload.salesOrderInSap.Items map {
+				"row": {
+					"ITM_NUMBER": $.ITM_NUMBER,
+					"UPDATEFLAG": "D"
+				}			
+			}) }) if (payload.OpportunityLineItems == null and payload.salesOrderInSap.Items != null),
+			
+			"ORDER_TEXT": {
+				"row": {
+					"TEXT_ID": "0002",
+					"LANGU": "EN",
+					"TEXT_LINE": payload.Description
+				},
+				"row" : {
+					"TEXT_ID": "0011",
+					"LANGU": "EN",
+					"TEXT_LINE": payload.ForecastCategory
+				},
+				"row" : {
+					"TEXT_ID": "0001",
+					"LANGU": "EN",
+					"TEXT_LINE": payload.Name
+				}
+			}
+		}
+	}	]]></ee:set-payload>
+                                </ee:message>
+                            </ee:transform>
+							<logger level="INFO" doc:name="Logger" doc:id="2531fcf5-beeb-48aa-8d79-a140a8f18b67" message="UPDATE SALESORDER"/>
+							<sap:execute-synchronous-remote-function-call doc:name="BAPI_SALESORDER_CHANGE"
+                                doc:id="92d036ab-9d21-4c6a-9aca-181ab8ac3938" config-ref="SAP_Outbound" key="BAPI_SALESORDER_CHANGE" />
+                        </when>
+                        <otherwise>
+                            <ee:transform doc:name="Transform Opportunity to BAPI_SALESORDER_CREATEFROMDAT2" doc:id="a572a914-b7ad-438f-8c58-bf0f2d8d49a5">
+                                <ee:message>
+                                    <ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+fun convertToArray(record) = {
+	records : if (record is Array) record else [record]
+}
+fun createItmNumber(position) = {
+	ITM_NUMBER : (10 * position) as String {format: "000000"}
+}
+---
+"BAPI_SALESORDER_CREATEFROMDAT2": {
+		"import": {
+			"ORDER_HEADER_IN": {
+				"DOC_TYPE": "TA",
+				"SALES_ORG": payload.SalesOrganization,
+				"DISTR_CHAN": payload.DistributionChannel,
+				"DIVISION": payload.Division,
+				"REQ_DATE_H": payload.CloseDate replace "-" with "",
+				"PURCH_NO_C": payload.Id,
+				"CURRENCY": "EUR"
+			}
+		},
+		"tables": {
+			("ORDER_CONDITIONS_IN": {( convertToArray(payload.OpportunityLineItems.records).records map {
+				"row" : {
+					"ITM_NUMBER": createItmNumber($$ + 1).ITM_NUMBER,
+					"COND_TYPE": "PR00",
+					"COND_VALUE": $.Quantity
+					}
+			} )} ) if payload.OpportunityLineItems != null,
+			("ORDER_ITEMS_IN": {( convertToArray(payload.OpportunityLineItems.records).records map {
+				"row" : {
+					"ITM_NUMBER": createItmNumber($$ + 1).ITM_NUMBER,
+					"MATERIAL": $.PricebookEntry.Product2."sap_external_id__c",
+					"TARGET_QTY": $.Quantity
+					}				
+			} )} ) if payload.OpportunityLineItems != null,
+			("ORDER_ITEMS_INX": {( convertToArray(payload.OpportunityLineItems.records).records map {
+				"row" : {
+					"MATERIAL" : "X",
+					"UPDATEFLAG" : "I",
+					"ITM_NUMBER" : createItmNumber($$ + 1).ITM_NUMBER
+					}				
+			} )} ) if payload.OpportunityLineItems != null,
+			"ORDER_PARTNERS": {
+				"row" @(id: 1): {
+					"PARTN_ROLE": "AG",
+					"PARTN_NUMB": payload.CustomerNumber 
+				}
+			},			
+			"ORDER_TEXT": {
+				"row" @(id: 1): {
+					"TEXT_ID": "0002",
+					"LANGU": "EN",
+					"TEXT_LINE": payload.Description
+				},
+				"row" @(id: 2): {
+					"TEXT_ID": "0011",
+					"LANGU": "EN",
+					"TEXT_LINE": payload.ForecastCategory
+				},
+				"row" @(id: 3): {
+					"TEXT_ID": "0001",
+					"LANGU": "EN",
+					"TEXT_LINE": payload.Name
+				}
+			}
+		}
+	}
+]]></ee:set-payload>
+                                </ee:message>
+                            </ee:transform>
+                            <logger level="INFO" doc:name="Logger" doc:id="55c7a44c-f1bc-4924-af38-605d0ced8faf" message="INSERT SALESORDER"/>
+							<sap:execute-synchronous-remote-function-call key="BAPI_SALESORDER_CREATEFROMDAT2"
+                                doc:name="BAPI_SALESORDER_CREATEFROMDAT2" doc:id="de588d53-7b83-471e-b9b6-a39f24d6684d" config-ref="SAP_Outbound" />
+                        </otherwise>
+                    </choice>
+                </batch:step>
+            </batch:process-records>
+            <batch:on-complete>
+                <scatter-gather doc:name="All" doc:id="ef2964ef-0b85-4c6c-a5ee-b834df639e7b">
+                    <route>
+                        <logger level="INFO" doc:name="Migration process has finished!" doc:id="b7575d38-7dbd-4602-9186-1bbb25234896"
+                            message="Migration process has finished!" />
+                    </route>
+                    <route>
+                        <ee:transform doc:name="Prepare migration result email" doc:id="c84b4bc4-5a65-41c1-9d0c-f1ebd3d8db7a">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+ output text/plain
+ ---
+ "Migration Report: \n"
+
+ ++ "\n Time [milliseconds]: " 		++ payload.elapsedTimeInMillis
+ ++ "\n Total Records: "				++ payload.totalRecords
+ ++ "\n Successful Records: "		++ payload.successfulRecords
+ ++ "\n Failed Records: "			++ payload.failedRecords
+ ++ "\n Loaded Records: "			++ payload.loadedRecords
+ ++ "\n Processed Records: " 		++ payload.processedRecords]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                        <email:send config-ref="Gmail_SMTP" doc:name="Send migration result email" doc:id="5896eaa9-dd10-47a2-a6fc-6319b11dbd06"
+                            fromAddress="${mail.from}" subject="${mail.subject}">
+                            <email:to-addresses>
+                                <email:to-address value="${mail.to}" />
+                            </email:to-addresses>
+                        </email:send>
+                    </route>
+                </scatter-gather>
+            </batch:on-complete>
+        </batch:job>
+    </flow>
+    <flow name="mainFlow" doc:id="7c0a5bef-b3d5-442f-bff3-10d038f69a5e">
+        <flow-ref doc:name="businessLogicFlow" doc:id="91360ede-4d71-44c7-9b64-8ee762e04ea0" name="businessLogicFlow" />
+        <error-handler>
+            <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate"
+                doc:id="488b507d-e26c-4c56-8759-8bb4f6645d71" type="ANY">
+                <flow-ref doc:name="errorHandlingFlow" doc:id="afdaf73c-0137-4d60-84f6-5c41234771a3" name="errorHandlingFlow" />
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+</mule>
+
+
+        
