@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<configuration>
+	<placeholders>
+		<placeholder id="template_name">Salesforce to SAP Opportunity Migration</placeholder>
+	</placeholders>
+	<sections>
+		<section id="use_case">
+This Anypoint Template should serve as a foundation for setting a migration of won opportunities from Salesforce to sales orders in SAP.
+			
+Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
+			
+As implemented, this Anypoint Template leverages the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
+The batch job is divided in *Process* and *On Complete* stages.
+The integration is triggered by the HTTP endpoint to fetch all Salesforce won opportunities with assigned Account suitable for migration. 
+In the batch the sales order is fetched from SAP by its purchase order number equal to opportunity ID.
+If it exists, more sales order details are fetched from SAP.
+In next batch step customer is looked up by opportunity account name if sync policy is set to synchronize accounts.
+If the customer is found its sales areas are fetched from SAP and first one is selected to be used in sales order creation.
+If it is not found, then new customer is created with preconfigured sales area.
+Template doesn't support changing customer of the existing sales order.
+Next batch step is executed only if preconfigured (dummy) account is configured to be used. In that step also preconfigured sales area and customer number are set up.
+Account synchronization policy must be either `syncAccount` or `assignDummyAccount`. Sales order creation will fail if it has no account (ship to) assigned.
+Next two steps creates or updates sales order in SAP. 
+Finally during the *On Complete* stage the Anypoint Template will send an email and log output statistics data into the console.
+		</section>
+		<section id="running_on_studio">
+		<![CDATA[
+In order to make this Anypoint Template run on Mule Studio there are a few extra steps that needs to be made.
+Please check this Documentation Page:
+
++ [Enabling Your Studio Project for SAP](http://www.mulesoft.org/documentation/display/current/SAP+Connector#SAPConnector-EnablingYourStudioProjectforSAP)
+		]]>
+		</section>
+		<section id="considerations">
+		<![CDATA[
+To make this Anypoint Template run, there are certain preconditions that must be considered. All of them deal with the preparations in both, that must be made in order for all to run smoothly.
+**Failing to do so could lead to unexpected behavior of the template.**
+
+Before continue with the use of this Anypoint Template, you may want to check out this [Documentation Page](http://www.mulesoft.org/documentation/display/current/SAP+Connector), that will teach you how to work 
+with SAP and Anypoint Studio.
+
+## Disclaimer
+This Anypoint template uses a few private Maven dependencies from Mulesoft in order to work. If you intend to run this template with Maven support, you need to add three extra dependencies for SAP to the pom.xml file.
+		]]>
+		</section>
+		<section id="api_calls">There are no particular considerations for this Anypoint Template regarding API calls.</section>
+		<section id="application_configuration">
+		<![CDATA[
+**HTTP Connector configuration**
++ http.port `9090`
+
+**SalesForce Connector configuration**
+
++ sfdc.username `bob.dylan@sfdc`
++ sfdc.password `DylanPassword123`
++ sfdc.securityToken `avsfwCUl7apQs56Xq2AKi3X`
+
+**SAP Connector configuration**
+
++ sap.jco.ashost `your.sap.address.com`
++ sap.jco.user `SAP_USER`
++ sap.jco.passwd `SAP_PASS`
++ sap.jco.sysnr `14`
++ sap.jco.client `800`
++ sap.jco.lang `EN`
+
++ account.sync.policy `syncAccount`
++ account.sapCustomerNumber `0000001175`
++ account.sapSalesOrganization `3020`
++ account.sapDistributionChannel `30`
++ account.sapDivision `00`
++ account.sapRefCustomer `0000000255`
+
+**SMTP Services configuration**
+
++ smtp.host `smtp.gmail.com`
++ smtp.port `587`
++ smtp.user `gmailuser`
++ smtp.password `gmailpassword`
+
+**Mail details**
+
++ mail.from `your.email@gmail.com`
++ mail.to `your.email@gmail.com`
++ mail.subject `Mail subject`
+]]>
+		</section>
+        <section id="api_calls">
+        <![CDATA[
+Salesforce imposes limits on the number of API Calls that can be made. Therefore calculating this amount may be an important factor to consider. 
+In this template only one Salesforce query is made so this is not something to worry about.
+]]>
+        </section>
+        <section id="default_endpoints_xml">
+        <![CDATA[
+This is the file where you will found the inbound and outbound sides of your integration app.
+This Template has only an [HTTP Listener Connector](http://www.mulesoft.org/documentation/display/current/HTTP+Listener+Connector) as the way to trigger the use case.
+$H$H# Inbound Flow
+**HTTP Listener Connector** - Start Report Generation
+
++ `${http.port}` is set as a property to be defined either on a property file or in CloudHub environment variables.
++ The path configured by default is `migrateopportunities` and you are free to change for the one you prefer.
++ The host name for all endpoints in your CloudHub configuration should be defined as `localhost`. CloudHub will then route requests from your application domain URL to the endpoint.
++ The endpoint is a *request-response* since as a result of calling it the response will be the total of Opportunities synced and filtered by the criteria specified.
+]]>
+        </section>
+        <section id="default_business_logic_xml">
+        <![CDATA[
+Functional aspect of the Template is implemented on this XML, directed by one flow responsible of executing the logic.
+For the purpose of this particular Template the *mainFlow* uses a [Batch Job](http://www.mulesoft.org/documentation/display/current/Batch+Processing), which handles all the logic of it.
+]]>
+        </section>
+	</sections>
+</configuration>
