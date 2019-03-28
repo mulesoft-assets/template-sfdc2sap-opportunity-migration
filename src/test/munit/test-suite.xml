@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+	<munit:config name="test-suite.xml" />
+	<configuration-properties doc:name="Configuration properties"
+		doc:id="61b15202-a52d-4d5b-8e74-4625a12bc31f" file="mule.test.properties" />
+	<munit:before-test name="test-suiteBefore_Test"
+		description="Before tests actions" doc:id="929473ae-a08e-4a40-83ed-c175b56bf1ed">
+		<flow-ref doc:name="Reference to getTestRecordFromSAPSubFlow"
+			doc:id="660e2627-1a40-4f7e-b736-6b12c78141c2" name="getTestRecordFromSAPSubFlow" />
+		<ee:transform doc:name="Prepare test data"
+			doc:id="370db003-1bee-435b-8b0e-796d31d61f8e">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+fun createNextItmNumber() = {
+	ITM_NUMBER : (payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].ITM_NUMBER + 10) as String {format: "000000"}
+}
+---
+"BAPI_SALESORDER_CHANGE": {
+	"import": {
+			"ORDER_HEADER_IN": {
+				"SALES_ORG": payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].SALES_ORG,
+				"DISTR_CHAN": payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].DISTR_CHAN,
+				"DIVISION": payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].DIVISION,
+				"REQ_DATE_H": payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].REQ_DATE,
+				"CURRENCY": "USD"
+			},
+			"ORDER_HEADER_INX": {
+				"UPDATEFLAG": "U",
+				"SALES_ORG": "X",
+				"DISTR_CHAN": "X",
+				"DIVISION": "X",
+				"REQ_DATE_H": "X",
+				"NAME": "X",
+				"WAR_DATE": "X",
+				"CURRENCY": "X"
+			},
+			"SALESDOCUMENT": payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].SD_DOC
+	},
+	"tables": {
+		"ORDER_ITEM_IN": {
+			"row": {
+				"ITM_NUMBER": createNextItmNumber().ITM_NUMBER,
+				"MATERIAL": payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].MATERIAL,
+				"TARGET_QTY": payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].REQ_QTY
+			},
+			"row": {
+				"ITM_NUMBER": payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].ITM_NUMBER
+			}
+		},
+		"ORDER_ITEM_INX": {
+			"row": {
+				"ITM_NUMBER": payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].ITM_NUMBER,
+				"UPDATEFLAG": "D"
+			},
+			"row": {
+				"ITM_NUMBER": createNextItmNumber().ITM_NUMBER,
+				"UPDATEFLAG": "I",
+				"MATERIAL": "X",
+				"TARGET_QTY": "X"
+			}
+		},
+		"ORDER_TEXT": {
+				"row": {
+					"TEXT_ID": "0002",
+					"LANGU": "EN",
+					"TEXT_LINE": ""
+				},
+				"row" : {
+					"TEXT_ID": "0011",
+					"LANGU": "EN",
+					"TEXT_LINE": "Closed"
+				},
+				"row" : {
+					"TEXT_ID": "0001",
+					"LANGU": "EN",
+					"TEXT_LINE": p('test.sfdc.account.name')
+				}
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<try doc:name="Try" doc:id="e9d2a9e4-538b-4b49-b5e1-8e240ca350b7"
+			transactionalAction="ALWAYS_BEGIN">
+			<sap:execute-synchronous-remote-function-call
+				key="BAPI_SALESORDER_CHANGE" doc:name="BAPI_SALESORDER_CHANGE"
+				doc:id="44dc3dd6-f9f0-4722-9f87-6130a56b6eec" config-ref="SAP_Outbound"
+				transactionalAction="ALWAYS_JOIN" />
+		</try>
+		<munit-tools:mock-when doc:name="Mock email processor to avoid sending email"
+			doc:id="493aed19-94df-4645-86b5-9e4c79c79f6c" processor="email:send">
+			<munit-tools:then-return />
+		</munit-tools:mock-when>
+	</munit:before-test>
+	<munit:test name="test-suiteTest" description="MUnit Test"
+		doc:id="4ccdc7f5-0902-48a0-85b1-b5b3516ad4f9">
+		<munit:execution>
+			<scripting:execute engine="groovy"
+				doc:name="Sleep for 30s until the processing is completed" doc:id="eb260fd6-9a9d-45b0-926e-3369dabe9f05">
+				<scripting:code>sleep(30000)</scripting:code>
+			</scripting:execute>
+			<flow-ref doc:name="Reference to getTestRecordSfdcSubFlow"
+				doc:id="2e084e6c-fd26-4c98-94d0-0ee842cd273d" name="getTestRecordSfdcSubFlow" />
+			<flow-ref doc:name="Reference to businessLogicFlow" doc:id="8a12203b-0a0b-4a5d-87c2-d621c0c8286d"
+				name="businessLogicFlow" />
+			<scripting:execute engine="groovy"
+				doc:name="Sleep for 30s until the processing is completed" doc:id="87ab2e2b-10b7-4f0b-8a78-6e2d6a1624e9">
+				<scripting:code>sleep(30000)</scripting:code>
+			</scripting:execute>
+			<flow-ref doc:name="Reference to getTestRecordFromSAPSubFlow"
+				doc:id="76b56674-bcb5-4809-857f-7cea47f4a8f9" name="getTestRecordFromSAPSubFlow" />
+			<ee:transform doc:name="Store updated data"
+				doc:id="d63d99eb-1e00-47c7-a2d8-69d7b44e81cb">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="newCurrency"><![CDATA[%dw 2.0
+output application/java
+---
+payload."BAPI_SALESORDER_GETLIST".tables."SALES_ORDERS".*row[0].CURRENCY]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that if currency was updated"
+				doc:id="f25f535f-9d3c-4f41-876e-007b24adac38" expression="#[vars.newCurrency]"
+				is='#[MunitTools::equalTo("EUR")]' message="Currency was not updated!" />
+		</munit:validation>
+	</munit:test>
+	<sub-flow name="getTestRecordSfdcSubFlow" doc:id="4b19bd47-7196-45df-9224-b44cbf700882">
+		<flow-ref doc:name="Reference to getDataFromSfdcSubFlow"
+			doc:id="8687f6b1-9624-493c-9cdb-ee188af79ed0" name="getDataFromSfdcSubFlow" />
+		<ee:transform doc:name="Filtering test records"
+			doc:id="b9a82b5b-7d12-40c6-bb83-5104e2d45688">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload filter ($.Name == p('test.sfdc.account.name'))]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<flow name="getTestRecordFromSAPSubFlow" doc:id="223a384c-e383-43ad-917d-61248c81fec3">
+		<flow-ref doc:name="Reference to getTestRecordSfdcSubFlow"
+			doc:id="925ada9b-27fc-443a-a19d-e49d59b3f919" name="getTestRecordSfdcSubFlow" />
+		<ee:transform doc:name="Set XML input"
+			doc:id="f53c9762-500d-43d5-90b2-9f633754551a">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  "BAPI_SALESORDER_GETLIST": {
+    "import": {
+    	"PURCHASE_ORDER_NUMBER" : payload.Id
+    }
+  }
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="opportunity"><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<sap:execute-synchronous-remote-function-call
+			key="BAPI_SALESORDER_GETLIST" doc:name="BAPI_SALESORDER_GETLIST"
+			doc:id="3f09bd09-fcb3-44ba-8de9-e363eef78679" config-ref="SAP_Outbound" />
+	</flow>
+</mule>
