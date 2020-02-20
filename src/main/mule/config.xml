@@ -20,13 +20,13 @@
 			securityToken="${sfdc.securityToken}" username="${sfdc.username}" />
 	</salesforce:sfdc-config>
 
-	<sap:outbound-config name="SAP_Outbound"
-		doc:id="5720b0d2-5e69-4d3b-9665-5279ad1e2bc7" doc:name="SAP Outbound">
+	<sap:sap-config name="SAP_Config"
+		doc:id="5720b0d2-5e69-4d3b-9665-5279ad1e2bc7" doc:name="SAP Config">
 		<sap:simple-connection-provider-connection
 			applicationServerHost="${sap.jco.ashost}" client="${sap.jco.client}"
 			language="${sap.jco.lang}" password="${sap.jco.passwd}" systemNumber="${sap.jco.sysnr}"
 			username="${sap.jco.user}" />
-	</sap:outbound-config>
+	</sap:sap-config>
 
 	<http:listener-config name="HTTP_Listener_config"
 		doc:id="910654bf-9fd9-4073-bad4-cf951b7f0022" doc:name="HTTP Listener config">

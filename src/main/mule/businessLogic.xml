@@ -41,9 +41,9 @@ output application/java
 payload]]></ee:set-variable>
 						</ee:variables>
 					</ee:transform>
-					<sap:execute-synchronous-remote-function-call
+					<sap:sync-rfc
 						doc:name="BAPI_SALESORDER_GETLIST" doc:id="02cf21c4-949b-48da-b4e0-bc93f1a1ebfc"
-						config-ref="SAP_Outbound" key="BAPI_SALESORDER_GETLIST" />
+						config-ref="SAP_Config" key="BAPI_SALESORDER_GETLIST" />
 					<ee:transform doc:name="Store result to variable oppotunity"
 						doc:id="5124356a-52ec-4456-bd00-60e1bf89d157">
 						<ee:message>
@@ -84,9 +84,8 @@ output application/xml
 }]]></ee:set-payload>
 								</ee:message>
 							</ee:transform>
-							<sap:execute-synchronous-remote-function-call
-								key="BAPI_ISAORDER_GETDETAILEDLIST" doc:name="SAP BAPI_ISAORDER_GETDETAILEDLIST"
-								doc:id="3071d051-b7e1-418c-bc3c-162990e1ad02" config-ref="SAP_Outbound" />
+							<sap:sync-rfc
+								key="BAPI_ISAORDER_GETDETAILEDLIST" doc:name="SAP BAPI_ISAORDER_GETDETConfig" config-ref="SAP_Config"/>
 							<ee:transform
 								doc:name="Transform BAPI_ISAORDER_GETDETAILEDLIST to Sales Order"
 								doc:id="67950dd9-f49c-4c6f-93fa-583ebb2084f8">
@@ -181,9 +180,9 @@ output application/java
 payload]]></ee:set-variable>
 						</ee:variables>
 					</ee:transform>
-					<sap:execute-synchronous-remote-function-call
+					<sap:sync-rfc
 						doc:name="Get Customer by Name" doc:id="ddcc100e-4fa0-4d38-a2ba-f839bf82b1cc"
-						config-ref="SAP_Outbound" key="BAPI_CUSTOMER_FIND" />
+						config-ref="SAP_Config" key="BAPI_CUSTOMER_FIND" />
 					<ee:transform doc:name="BAPI CUSTOMER FIND to payload"
 						doc:id="46b2aeb7-64ba-4e85-a09b-fb90912a9e2c">
 						<ee:message>
@@ -223,9 +222,9 @@ vars.opportunity ++ {
 }]]></ee:set-variable>
 								</ee:variables>
 							</ee:transform>
-							<sap:execute-synchronous-remote-function-call
+							<sap:sync-rfc
 								doc:name="Get Account Group from SAP" doc:id="1c4c4783-f41a-49aa-9fd9-28f3ac3bb788"
-								config-ref="SAP_Outbound" key="BAPI_CUSTOMER_GETSALESAREAS" />
+								config-ref="SAP_Config" key="BAPI_CUSTOMER_GETSALESAREAS" />
 							<ee:transform doc:name="Add Data to payload"
 								doc:id="0c87280c-728b-470f-a5a3-f180ab3de356">
 								<ee:message>
@@ -275,9 +274,9 @@ output application/xml
 }]]></ee:set-payload>
 								</ee:message>
 							</ee:transform>
-							<sap:execute-synchronous-remote-function-call
+							<sap:sync-rfc
 								doc:name="Get Next Customer Number from SAP" doc:id="1b6a9050-5a61-4fad-afa2-c986847d8a1b"
-								config-ref="SAP_Outbound" key="BAPI_CUSTOMER_CREATEFROMDATA1" />
+								config-ref="SAP_Config" key="BAPI_CUSTOMER_CREATEFROMDATA1" />
 							<ee:transform doc:name="Add Data to payload"
 								doc:id="cd8743ca-bf18-440f-92e3-58531a25b599">
 								<ee:message>
@@ -427,9 +426,9 @@ fun createNextItmNumber(position) = {
 							</ee:transform>
 							<try doc:name="Try" doc:id="9a674303-addf-4cc6-99bc-8ef7612ea254"
 								transactionalAction="ALWAYS_BEGIN">
-								<sap:execute-synchronous-remote-function-call
+								<sap:sync-rfc
 									doc:name="BAPI_SALESORDER_CHANGE" doc:id="92d036ab-9d21-4c6a-9aca-181ab8ac3938"
-									config-ref="SAP_Outbound" key="BAPI_SALESORDER_CHANGE"
+									config-ref="SAP_Config" key="BAPI_SALESORDER_CHANGE"
 									transactionalAction="ALWAYS_JOIN" />
 							</try>
 						</when>
@@ -524,9 +523,9 @@ fun createItmNumber(position) = {
 							</ee:transform>
 							<try doc:name="Try" doc:id="869d3a06-27ad-49bd-ae52-0551829bf24d"
 								transactionalAction="ALWAYS_BEGIN">
-								<sap:execute-synchronous-remote-function-call
+								<sap:sync-rfc
 									doc:name="BAPI_SALESORDER_CREATEFROMDAT2" doc:id="de588d53-7b83-471e-b9b6-a39f24d6684d"
-									config-ref="SAP_Outbound" key="BAPI_SALESORDER_CREATEFROMDAT2"
+									config-ref="SAP_Config" key="BAPI_SALESORDER_CREATEFROMDAT2"
 									transactionalAction="ALWAYS_JOIN" />
 							</try>
 						</otherwise>

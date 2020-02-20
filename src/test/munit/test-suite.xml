@@ -95,9 +95,9 @@ fun createNextItmNumber() = {
 		</ee:transform>
 		<try doc:name="Try" doc:id="e9d2a9e4-538b-4b49-b5e1-8e240ca350b7"
 			transactionalAction="ALWAYS_BEGIN">
-			<sap:execute-synchronous-remote-function-call
+			<sap:sync-rfc
 				key="BAPI_SALESORDER_CHANGE" doc:name="BAPI_SALESORDER_CHANGE"
-				doc:id="44dc3dd6-f9f0-4722-9f87-6130a56b6eec" config-ref="SAP_Outbound"
+				doc:id="44dc3dd6-f9f0-4722-9f87-6130a56b6eec" config-ref="SAP_Config"
 				transactionalAction="ALWAYS_JOIN" />
 		</try>
 		<munit-tools:mock-when doc:name="Mock email processor to avoid sending email"
