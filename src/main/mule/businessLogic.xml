@@ -85,7 +85,7 @@ output application/xml
 								</ee:message>
 							</ee:transform>
 							<sap:sync-rfc
-								key="BAPI_ISAORDER_GETDETAILEDLIST" doc:name="SAP BAPI_ISAORDER_GETDETConfig" config-ref="SAP_Config"/>
+								doc:id="3071d051-b7e1-418c-bc3c-162990e1ad02" key="BAPI_ISAORDER_GETDETAILEDLIST" doc:name="SAP BAPI_ISAORDER_GETDETConfig" config-ref="SAP_Config"/>
 							<ee:transform
 								doc:name="Transform BAPI_ISAORDER_GETDETAILEDLIST to Sales Order"
 								doc:id="67950dd9-f49c-4c6f-93fa-583ebb2084f8">
