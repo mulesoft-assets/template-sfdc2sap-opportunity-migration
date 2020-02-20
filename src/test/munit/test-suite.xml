@@ -177,8 +177,8 @@ output application/java
 payload]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<sap:execute-synchronous-remote-function-call
+		<sap:sync-rfc
 			key="BAPI_SALESORDER_GETLIST" doc:name="BAPI_SALESORDER_GETLIST"
-			doc:id="3f09bd09-fcb3-44ba-8de9-e363eef78679" config-ref="SAP_Outbound" />
+			doc:id="3f09bd09-fcb3-44ba-8de9-e363eef78679" config-ref="SAP_Config" />
 	</flow>
 </mule>
